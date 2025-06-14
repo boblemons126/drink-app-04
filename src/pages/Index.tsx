@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Navigation from '@/components/Navigation';
+import HomePage from '@/components/HomePage';
 import DrinkTracker from '@/components/DrinkTracker';
 import DrinkingGames from '@/components/DrinkingGames';
 import GroupManager from '@/components/GroupManager';
@@ -15,7 +16,7 @@ interface DrinkType {
 }
 
 const Index = () => {
-  const [activeTab, setActiveTab] = useState('drinks');
+  const [activeTab, setActiveTab] = useState('home');
   const [showSetup, setShowSetup] = useState(false);
   const [hasCompletedSetup, setHasCompletedSetup] = useState(false);
   const [drinkPrices, setDrinkPrices] = useState<DrinkType[]>([
@@ -53,6 +54,10 @@ const Index = () => {
     setShowSetup(true);
   };
 
+  const handleNavigate = (tab: string) => {
+    setActiveTab(tab);
+  };
+
   if (showSetup) {
     return (
       <DrinkSetup
@@ -65,6 +70,8 @@ const Index = () => {
 
   const renderActiveTab = () => {
     switch (activeTab) {
+      case 'home':
+        return <HomePage onNavigate={handleNavigate} onOpenSetup={openSetup} />;
       case 'drinks':
         return <DrinkTracker onOpenSetup={openSetup} drinkPrices={drinkPrices} />;
       case 'games':
@@ -74,7 +81,7 @@ const Index = () => {
       case 'memories':
         return <MemoryCapture />;
       default:
-        return <DrinkTracker onOpenSetup={openSetup} drinkPrices={drinkPrices} />;
+        return <HomePage onNavigate={handleNavigate} onOpenSetup={openSetup} />;
     }
   };
 
