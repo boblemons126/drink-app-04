@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Share, Gallery, Mic, MapPin } from 'lucide-react';
+import { Share, GalleryHorizontal, Mic, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 
@@ -74,7 +73,7 @@ const MemoryCapture: React.FC = () => {
       {/* Quick Actions */}
       <div className="grid grid-cols-2 gap-4">
         <Button className="glass-card p-6 h-auto flex-col space-y-2 hover:scale-105 transition-all duration-300">
-          <Gallery className="w-8 h-8 text-nightlife-cyan" />
+          <GalleryHorizontal className="w-8 h-8 text-nightlife-cyan" />
           <span className="text-sm font-medium">Take Photo</span>
         </Button>
         

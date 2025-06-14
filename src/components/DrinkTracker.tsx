@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Beer, Wine, Plus, Minus } from 'lucide-react';
+import { Beer, Wine, Plus, Minus, Share } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface Friend {

@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Users, Plus, MapPin } from 'lucide-react';
+import { Users, Plus, MapPin, Share } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
