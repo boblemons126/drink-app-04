@@ -14,9 +14,7 @@ interface Friend {
 interface DrinkType {
   id: string;
   name: string;
-  icon: React.ReactNode;
   price: number;
-  color: string;
   emoji: string;
 }
 
