@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,17 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				nightlife: {
+					purple: '#2D1B4E',
+					'purple-light': '#4A2C7A',
+					pink: '#FF10F0',
+					'pink-light': '#FF6BF7',
+					cyan: '#00FFFF',
+					'cyan-light': '#66FFFF',
+					black: '#0A0A0A',
+					'black-light': '#1A1A1A',
+					green: '#39FF14',
 				}
 			},
 			borderRadius: {
@@ -84,11 +96,53 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'fade-in': {
+					'0%': {
+						opacity: '0',
+						transform: 'translateY(10px)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'translateY(0)'
+					}
+				},
+				'scale-in': {
+					'0%': {
+						transform: 'scale(0.95)',
+						opacity: '0'
+					},
+					'100%': {
+						transform: 'scale(1)',
+						opacity: '1'
+					}
+				},
+				'neon-pulse': {
+					'0%, 100%': {
+						textShadow: '0 0 5px currentColor, 0 0 10px currentColor, 0 0 15px currentColor'
+					},
+					'50%': {
+						textShadow: '0 0 2px currentColor, 0 0 5px currentColor, 0 0 8px currentColor'
+					}
+				},
+				'counter-bounce': {
+					'0%': { transform: 'scale(1)' },
+					'50%': { transform: 'scale(1.2)' },
+					'100%': { transform: 'scale(1)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-in': 'fade-in 0.3s ease-out',
+				'scale-in': 'scale-in 0.2s ease-out',
+				'neon-pulse': 'neon-pulse 2s ease-in-out infinite',
+				'counter-bounce': 'counter-bounce 0.3s ease-out'
+			},
+			backgroundImage: {
+				'glass-gradient': 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
+				'neon-gradient': 'linear-gradient(135deg, #FF10F0 0%, #00FFFF 100%)',
+				'purple-gradient': 'linear-gradient(135deg, #2D1B4E 0%, #4A2C7A 100%)'
 			}
 		}
 	},
