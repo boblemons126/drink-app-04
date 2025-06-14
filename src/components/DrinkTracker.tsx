@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { Beer, Wine, Plus, Minus, Share } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Beer, Wine, Plus, Minus, Share, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface Friend {
@@ -17,56 +17,49 @@ interface DrinkType {
   icon: React.ReactNode;
   price: number;
   color: string;
+  emoji: string;
 }
 
-const DrinkTracker: React.FC = () => {
+interface DrinkTrackerProps {
+  onOpenSetup: () => void;
+  drinkPrices: DrinkType[];
+}
+
+const DrinkTracker: React.FC<DrinkTrackerProps> = ({ onOpenSetup, drinkPrices }) => {
   const [friends, setFriends] = useState<Friend[]>([
     {
       id: '1',
       name: 'Alex',
       avatar: '🎉',
-      drinks: { beer: 2, wine: 1, cocktail: 0 },
-      totalSpent: 18.50
+      drinks: { beer: 2, wine: 1, cocktail: 0, shot: 0, mixed_drink: 0 },
+      totalSpent: 0
     },
     {
       id: '2',
       name: 'Sam',
       avatar: '🍾',
-      drinks: { beer: 1, wine: 0, cocktail: 2 },
-      totalSpent: 22.00
+      drinks: { beer: 1, wine: 0, cocktail: 2, shot: 1, mixed_drink: 0 },
+      totalSpent: 0
     }
   ]);
 
-  const drinkTypes: DrinkType[] = [
-    {
-      id: 'beer',
-      name: 'Beer',
-      icon: <Beer className="drink-icon" />,
-      price: 6.50,
-      color: 'text-yellow-400'
-    },
-    {
-      id: 'wine',
-      name: 'Wine',
-      icon: <Wine className="drink-icon" />,
-      price: 8.00,
-      color: 'text-purple-400'
-    },
-    {
-      id: 'cocktail',
-      name: 'Cocktail',
-      icon: <div className="drink-icon">🍸</div>,
-      price: 12.00,
-      color: 'text-pink-400'
-    }
-  ];
+  // Calculate total spent when drink prices change
+  useEffect(() => {
+    setFriends(prev => prev.map(friend => {
+      const totalSpent = Object.entries(friend.drinks).reduce((total, [drinkId, count]) => {
+        const drinkType = drinkPrices.find(d => d.id === drinkId);
+        return total + (drinkType ? drinkType.price * count : 0);
+      }, 0);
+      return { ...friend, totalSpent };
+    }));
+  }, [drinkPrices]);
 
   const updateDrinkCount = (friendId: string, drinkType: string, change: number) => {
     setFriends(prev => prev.map(friend => {
       if (friend.id === friendId) {
         const newDrinkCount = Math.max(0, friend.drinks[drinkType] + change);
-        const drinkPrice = drinkTypes.find(d => d.id === drinkType)?.price || 0;
-        const priceDifference = change * drinkPrice;
+        const drink = drinkPrices.find(d => d.id === drinkType);
+        const priceDifference = change * (drink?.price || 0);
         
         return {
           ...friend,
@@ -87,95 +80,116 @@ const DrinkTracker: React.FC = () => {
   };
 
   return (
-    <div className="p-6 pb-32 space-y-6">
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold neon-text">Drink Tracker</h1>
-        <div className="glass-card p-4 mx-auto max-w-sm">
-          <p className="text-lg">Group Total</p>
-          <p className="text-3xl font-bold text-nightlife-green">
-            ${getTotalGroupSpent().toFixed(2)}
-          </p>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
+      {/* Floating background orbs */}
+      <div className="floating-orb w-72 h-72 bg-gradient-to-r from-blue-400 to-purple-400 top-20 left-10"></div>
+      <div className="floating-orb w-96 h-96 bg-gradient-to-r from-pink-400 to-orange-400 bottom-20 right-10"></div>
+      <div className="floating-orb w-80 h-80 bg-gradient-to-r from-cyan-400 to-blue-400 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
 
-      <div className="space-y-4">
-        {friends.map((friend) => (
-          <div key={friend.id} className="glass-card p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="text-2xl">{friend.avatar}</div>
-                <div>
-                  <h3 className="text-xl font-bold text-nightlife-cyan">{friend.name}</h3>
-                  <p className="text-sm text-gray-400">
-                    {getTotalDrinks(friend)} drinks • ${friend.totalSpent.toFixed(2)}
-                  </p>
+      <div className="relative z-10 p-6 pb-32 space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="text-center flex-1">
+            <h1 className="text-3xl font-bold text-slate-800 mb-2">Drink Tracker</h1>
+            <div className="liquid-glass rounded-2xl p-4 mx-auto max-w-sm">
+              <p className="text-slate-600 font-medium">Group Total</p>
+              <p className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                ${getTotalGroupSpent().toFixed(2)}
+              </p>
+            </div>
+          </div>
+          
+          <Button
+            onClick={onOpenSetup}
+            variant="outline"
+            className="liquid-glass-button-outline p-3 rounded-2xl"
+          >
+            <Settings className="w-6 h-6" />
+          </Button>
+        </div>
+
+        <div className="space-y-6">
+          {friends.map((friend) => (
+            <div key={friend.id} className="friend-card rounded-3xl p-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center text-2xl">
+                    {friend.avatar}
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-800">{friend.name}</h3>
+                    <p className="text-slate-600 font-medium">
+                      {getTotalDrinks(friend)} drinks • ${friend.totalSpent.toFixed(2)}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="grid grid-cols-1 gap-4">
-              {drinkTypes.map((drinkType) => (
-                <div key={drinkType.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
-                  <div className="flex items-center space-x-3">
-                    {drinkType.icon}
-                    <div>
-                      <p className="font-medium">{drinkType.name}</p>
-                      <p className="text-sm text-gray-400">${drinkType.price}</p>
+              <div className="grid grid-cols-1 gap-3">
+                {drinkPrices.map((drinkType) => (
+                  <div key={drinkType.id} className="drink-item rounded-2xl p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="text-2xl">{drinkType.emoji}</div>
+                        <div>
+                          <p className="font-semibold text-slate-800">{drinkType.name}</p>
+                          <p className="text-sm text-slate-600 font-medium">${drinkType.price.toFixed(2)}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center space-x-3">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => updateDrinkCount(friend.id, drinkType.id, -1)}
+                          className="counter-button decrement w-10 h-10 rounded-xl"
+                          disabled={friend.drinks[drinkType.id] === 0}
+                        >
+                          <Minus className="w-4 h-4" />
+                        </Button>
+                        
+                        <span className="text-2xl font-bold w-8 text-center text-slate-800 animate-bounce-gentle">
+                          {friend.drinks[drinkType.id]}
+                        </span>
+                        
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => updateDrinkCount(friend.id, drinkType.id, 1)}
+                          className="counter-button increment w-10 h-10 rounded-xl"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                  
-                  <div className="flex items-center space-x-3">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => updateDrinkCount(friend.id, drinkType.id, -1)}
-                      className="w-10 h-10 rounded-full bg-red-500/20 border-red-500/30 hover:bg-red-500/30"
-                      disabled={friend.drinks[drinkType.id] === 0}
-                    >
-                      <Minus className="w-4 h-4" />
-                    </Button>
-                    
-                    <span className="text-2xl font-bold w-8 text-center animate-counter-bounce">
-                      {friend.drinks[drinkType.id]}
-                    </span>
-                    
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => updateDrinkCount(friend.id, drinkType.id, 1)}
-                      className="w-10 h-10 rounded-full bg-nightlife-green/20 border-nightlife-green/30 hover:bg-nightlife-green/30"
-                    >
-                      <Plus className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="liquid-glass rounded-3xl p-6 text-center space-y-4">
+          <h3 className="text-xl font-bold text-slate-800">Night Summary</h3>
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <p className="text-3xl font-bold bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent">
+                {friends.reduce((total, friend) => total + getTotalDrinks(friend), 0)}
+              </p>
+              <p className="text-slate-600 font-medium">Total Drinks</p>
+            </div>
+            <div>
+              <p className="text-3xl font-bold bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">
+                ${getTotalGroupSpent().toFixed(2)}
+              </p>
+              <p className="text-slate-600 font-medium">Total Spent</p>
             </div>
           </div>
-        ))}
-      </div>
-
-      <div className="glass-card p-6 text-center space-y-4">
-        <h3 className="text-xl font-bold text-nightlife-pink">Night Summary</h3>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <p className="text-2xl font-bold text-nightlife-cyan">
-              {friends.reduce((total, friend) => total + getTotalDrinks(friend), 0)}
-            </p>
-            <p className="text-sm text-gray-400">Total Drinks</p>
-          </div>
-          <div>
-            <p className="text-2xl font-bold text-nightlife-green">
-              ${getTotalGroupSpent().toFixed(2)}
-            </p>
-            <p className="text-sm text-gray-400">Total Spent</p>
-          </div>
+          
+          <Button className="liquid-glass-button w-full py-4 rounded-2xl">
+            <Share className="w-5 h-5 mr-2" />
+            Share Night Summary
+          </Button>
         </div>
-        
-        <Button className="btn-neon w-full">
-          <Share className="w-4 h-4 mr-2" />
-          Share Night Summary
-        </Button>
       </div>
     </div>
   );

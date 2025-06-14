@@ -16,27 +16,27 @@ const Navigation: React.FC<NavigationProps> = ({ activeTab, onTabChange }) => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 glass-card mx-4 mb-4 rounded-3xl">
-      <div className="flex justify-around py-3">
-        {tabs.map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
-          
-          return (
-            <button
-              key={tab.id}
-              onClick={() => onTabChange(tab.id)}
-              className={`flex flex-col items-center space-y-1 p-3 rounded-2xl transition-all duration-300 ${
-                isActive 
-                  ? 'bg-nightlife-pink text-white scale-110' 
-                  : 'text-gray-400 hover:text-nightlife-cyan hover:scale-105'
-              }`}
-            >
-              <Icon className="w-6 h-6" />
-              <span className="text-xs font-medium">{tab.label}</span>
-            </button>
-          );
-        })}
+    <nav className="fixed bottom-0 left-0 right-0 z-50 mx-4 mb-4">
+      <div className="liquid-nav rounded-3xl p-3">
+        <div className="flex justify-around">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            
+            return (
+              <button
+                key={tab.id}
+                onClick={() => onTabChange(tab.id)}
+                className={`nav-item flex flex-col items-center space-y-1 p-3 rounded-2xl transition-all duration-300 ${
+                  isActive ? 'active' : 'text-slate-600'
+                }`}
+              >
+                <Icon className="w-6 h-6" />
+                <span className="text-xs font-semibold">{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </nav>
   );

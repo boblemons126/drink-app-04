@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Share, GalleryHorizontal, Mic, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -56,101 +57,108 @@ const MemoryCapture: React.FC = () => {
 
   const getMemoryColor = (type: string) => {
     switch (type) {
-      case 'photo': return 'border-nightlife-cyan/30';
-      case 'quote': return 'border-nightlife-pink/30';
-      case 'location': return 'border-nightlife-purple/30';
-      default: return 'border-white/20';
+      case 'photo': return 'border-l-cyan-400';
+      case 'quote': return 'border-l-pink-400';
+      case 'location': return 'border-l-purple-400';
+      default: return 'border-l-blue-400';
     }
   };
 
   return (
-    <div className="p-6 pb-32 space-y-6">
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold neon-text">Night Memories</h1>
-        <p className="text-gray-400">Capture the epic moments 📸</p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
+      {/* Floating background orbs */}
+      <div className="floating-orb w-72 h-72 bg-gradient-to-r from-blue-400 to-purple-400 top-20 left-10"></div>
+      <div className="floating-orb w-96 h-96 bg-gradient-to-r from-pink-400 to-orange-400 bottom-20 right-10"></div>
+      <div className="floating-orb w-80 h-80 bg-gradient-to-r from-cyan-400 to-blue-400 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-2 gap-4">
-        <Button className="glass-card p-6 h-auto flex-col space-y-2 hover:scale-105 transition-all duration-300">
-          <GalleryHorizontal className="w-8 h-8 text-nightlife-cyan" />
-          <span className="text-sm font-medium">Take Photo</span>
-        </Button>
-        
-        <Button className="glass-card p-6 h-auto flex-col space-y-2 hover:scale-105 transition-all duration-300">
-          <MapPin className="w-8 h-8 text-nightlife-pink" />
-          <span className="text-sm font-medium">Check In</span>
-        </Button>
-      </div>
+      <div className="relative z-10 p-6 pb-32 space-y-6">
+        <div className="text-center space-y-2">
+          <h1 className="text-3xl font-bold text-slate-800">Night Memories</h1>
+          <p className="text-slate-600">Capture the epic moments 📸</p>
+        </div>
 
-      {/* Add Quote */}
-      <div className="glass-card p-6 space-y-4">
-        <h3 className="text-lg font-bold text-nightlife-pink flex items-center">
-          <Mic className="w-5 h-5 mr-2" />
-          Quote of the Night
-        </h3>
-        <Textarea
-          placeholder="What hilarious thing just happened? 😂"
-          value={newQuote}
-          onChange={(e) => setNewQuote(e.target.value)}
-          className="bg-white/10 border-white/20 text-white placeholder-gray-400 resize-none"
-          rows={3}
-        />
-        <Button 
-          onClick={addQuote}
-          className="btn-neon w-full"
-          disabled={!newQuote.trim()}
-        >
-          Save Memory
-        </Button>
-      </div>
+        {/* Quick Actions */}
+        <div className="grid grid-cols-2 gap-4">
+          <Button className="liquid-glass-button-outline p-6 h-auto flex-col space-y-2 rounded-2xl">
+            <GalleryHorizontal className="w-8 h-8 text-cyan-500" />
+            <span className="text-sm font-semibold">Take Photo</span>
+          </Button>
+          
+          <Button className="liquid-glass-button-outline p-6 h-auto flex-col space-y-2 rounded-2xl">
+            <MapPin className="w-8 h-8 text-pink-500" />
+            <span className="text-sm font-semibold">Check In</span>
+          </Button>
+        </div>
 
-      {/* Memories Timeline */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-bold text-nightlife-cyan">Tonight's Timeline</h3>
-        
-        {memories.map((memory) => (
-          <div key={memory.id} className={`glass-card p-4 border-l-4 ${getMemoryColor(memory.type)}`}>
-            <div className="flex items-start space-x-3">
-              <div className="text-2xl">{getMemoryIcon(memory.type)}</div>
-              <div className="flex-1">
-                <p className="text-white font-medium">{memory.content}</p>
-                <div className="flex items-center justify-between mt-2">
-                  <p className="text-sm text-gray-400">{memory.timestamp}</p>
-                  {memory.location && (
-                    <p className="text-sm text-nightlife-cyan">{memory.location}</p>
-                  )}
+        {/* Add Quote */}
+        <div className="liquid-glass rounded-2xl p-6 space-y-4">
+          <h3 className="text-lg font-bold text-slate-800 flex items-center">
+            <Mic className="w-5 h-5 mr-2 text-pink-500" />
+            Quote of the Night
+          </h3>
+          <Textarea
+            placeholder="What hilarious thing just happened? 😂"
+            value={newQuote}
+            onChange={(e) => setNewQuote(e.target.value)}
+            className="liquid-glass-input resize-none text-slate-800 placeholder-slate-500 rounded-xl"
+            rows={3}
+          />
+          <Button 
+            onClick={addQuote}
+            className="liquid-glass-button w-full py-3 rounded-xl"
+            disabled={!newQuote.trim()}
+          >
+            Save Memory
+          </Button>
+        </div>
+
+        {/* Memories Timeline */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-bold text-slate-800">Tonight's Timeline</h3>
+          
+          {memories.map((memory) => (
+            <div key={memory.id} className={`liquid-glass rounded-2xl p-4 border-l-4 ${getMemoryColor(memory.type)}`}>
+              <div className="flex items-start space-x-3">
+                <div className="text-2xl">{getMemoryIcon(memory.type)}</div>
+                <div className="flex-1">
+                  <p className="text-slate-800 font-medium">{memory.content}</p>
+                  <div className="flex items-center justify-between mt-2">
+                    <p className="text-sm text-slate-600">{memory.timestamp}</p>
+                    {memory.location && (
+                      <p className="text-sm text-cyan-600 font-medium">{memory.location}</p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      {/* Night Stats */}
-      <div className="glass-card p-6 space-y-4">
-        <h3 className="text-lg font-bold text-nightlife-green">Night Stats</h3>
-        <div className="grid grid-cols-3 gap-4 text-center">
-          <div>
-            <p className="text-2xl font-bold text-nightlife-cyan">3</p>
-            <p className="text-sm text-gray-400">Venues</p>
-          </div>
-          <div>
-            <p className="text-2xl font-bold text-nightlife-pink">12</p>
-            <p className="text-sm text-gray-400">Photos</p>
-          </div>
-          <div>
-            <p className="text-2xl font-bold text-nightlife-green">5</p>
-            <p className="text-sm text-gray-400">Quotes</p>
+        {/* Night Stats */}
+        <div className="liquid-glass rounded-2xl p-6 space-y-4">
+          <h3 className="text-lg font-bold text-slate-800">Night Stats</h3>
+          <div className="grid grid-cols-3 gap-4 text-center">
+            <div>
+              <p className="text-2xl font-bold text-cyan-600">3</p>
+              <p className="text-sm text-slate-600">Venues</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-pink-600">12</p>
+              <p className="text-sm text-slate-600">Photos</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-green-600">5</p>
+              <p className="text-sm text-slate-600">Quotes</p>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Share Night */}
-      <Button className="btn-neon w-full">
-        <Share className="w-4 h-4 mr-2" />
-        Share Night Story
-      </Button>
+        {/* Share Night */}
+        <Button className="liquid-glass-button w-full py-4 rounded-2xl">
+          <Share className="w-5 h-5 mr-2" />
+          Share Night Story
+        </Button>
+      </div>
     </div>
   );
 };
