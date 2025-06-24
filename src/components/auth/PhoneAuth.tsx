@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Smartphone, Apple } from 'lucide-react';
@@ -14,8 +15,58 @@ interface PhoneAuthProps {
   showBackButton?: boolean;
 }
 
+// Common country codes with their names and codes
+const countryCodes = [
+  { code: '+1', country: 'US/CA', flag: '🇺🇸' },
+  { code: '+44', country: 'UK', flag: '🇬🇧' },
+  { code: '+33', country: 'France', flag: '🇫🇷' },
+  { code: '+49', country: 'Germany', flag: '🇩🇪' },
+  { code: '+39', country: 'Italy', flag: '🇮🇹' },
+  { code: '+34', country: 'Spain', flag: '🇪🇸' },
+  { code: '+31', country: 'Netherlands', flag: '🇳🇱' },
+  { code: '+46', country: 'Sweden', flag: '🇸🇪' },
+  { code: '+47', country: 'Norway', flag: '🇳🇴' },
+  { code: '+45', country: 'Denmark', flag: '🇩🇰' },
+  { code: '+41', country: 'Switzerland', flag: '🇨🇭' },
+  { code: '+43', country: 'Austria', flag: '🇦🇹' },
+  { code: '+32', country: 'Belgium', flag: '🇧🇪' },
+  { code: '+351', country: 'Portugal', flag: '🇵🇹' },
+  { code: '+30', country: 'Greece', flag: '🇬🇷' },
+  { code: '+48', country: 'Poland', flag: '🇵🇱' },
+  { code: '+420', country: 'Czech Rep.', flag: '🇨🇿' },
+  { code: '+36', country: 'Hungary', flag: '🇭🇺' },
+  { code: '+7', country: 'Russia', flag: '🇷🇺' },
+  { code: '+81', country: 'Japan', flag: '🇯🇵' },
+  { code: '+82', country: 'South Korea', flag: '🇰🇷' },
+  { code: '+86', country: 'China', flag: '🇨🇳' },
+  { code: '+91', country: 'India', flag: '🇮🇳' },
+  { code: '+61', country: 'Australia', flag: '🇦🇺' },
+  { code: '+64', country: 'New Zealand', flag: '🇳🇿' },
+  { code: '+55', country: 'Brazil', flag: '🇧🇷' },
+  { code: '+52', country: 'Mexico', flag: '🇲🇽' },
+  { code: '+54', country: 'Argentina', flag: '🇦🇷' },
+  { code: '+56', country: 'Chile', flag: '🇨🇱' },
+  { code: '+57', country: 'Colombia', flag: '🇨🇴' },
+  { code: '+51', country: 'Peru', flag: '🇵🇪' },
+  { code: '+27', country: 'South Africa', flag: '🇿🇦' },
+  { code: '+20', country: 'Egypt', flag: '🇪🇬' },
+  { code: '+234', country: 'Nigeria', flag: '🇳🇬' },
+  { code: '+254', country: 'Kenya', flag: '🇰🇪' },
+  { code: '+971', country: 'UAE', flag: '🇦🇪' },
+  { code: '+966', country: 'Saudi Arabia', flag: '🇸🇦' },
+  { code: '+972', country: 'Israel', flag: '🇮🇱' },
+  { code: '+90', country: 'Turkey', flag: '🇹🇷' },
+  { code: '+65', country: 'Singapore', flag: '🇸🇬' },
+  { code: '+60', country: 'Malaysia', flag: '🇲🇾' },
+  { code: '+66', country: 'Thailand', flag: '🇹🇭' },
+  { code: '+84', country: 'Vietnam', flag: '🇻🇳' },
+  { code: '+63', country: 'Philippines', flag: '🇵🇭' },
+  { code: '+62', country: 'Indonesia', flag: '🇮🇩' },
+];
+
 const PhoneAuth: React.FC<PhoneAuthProps> = ({ onBack, onComplete, showBackButton = true }) => {
-  const [phone, setPhone] = useState('');
+  const [countryCode, setCountryCode] = useState('+1');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState('');
@@ -24,24 +75,78 @@ const PhoneAuth: React.FC<PhoneAuthProps> = ({ onBack, onComplete, showBackButto
   const [isSignUp, setIsSignUp] = useState(true);
   const { toast } = useToast();
 
-  const formatPhoneNumber = (value: string) => {
+  const formatPhoneNumber = (value: string, countryCode: string) => {
+    // Remove all non-numeric characters
     const numbers = value.replace(/\D/g, '');
-    if (numbers.length <= 3) return numbers;
-    if (numbers.length <= 6) return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
-    return `${numbers.slice(0, 3)}-${numbers.slice(3, 6)}-${numbers.slice(6, 10)}`;
+    
+    // Apply basic formatting based on country code
+    if (countryCode === '+1') {
+      // US/Canada format: (123) 456-7890
+      if (numbers.length <= 3) return numbers;
+      if (numbers.length <= 6) return `(${numbers.slice(0, 3)}) ${numbers.slice(3)}`;
+      return `(${numbers.slice(0, 3)}) ${numbers.slice(3, 6)}-${numbers.slice(6, 10)}`;
+    } else if (countryCode === '+44') {
+      // UK format: 07123 456789
+      if (numbers.length <= 5) return numbers;
+      return `${numbers.slice(0, 5)} ${numbers.slice(5, 11)}`;
+    } else if (countryCode === '+33') {
+      // France format: 01 23 45 67 89
+      if (numbers.length <= 2) return numbers;
+      if (numbers.length <= 4) return `${numbers.slice(0, 2)} ${numbers.slice(2)}`;
+      if (numbers.length <= 6) return `${numbers.slice(0, 2)} ${numbers.slice(2, 4)} ${numbers.slice(4)}`;
+      if (numbers.length <= 8) return `${numbers.slice(0, 2)} ${numbers.slice(2, 4)} ${numbers.slice(4, 6)} ${numbers.slice(6)}`;
+      return `${numbers.slice(0, 2)} ${numbers.slice(2, 4)} ${numbers.slice(4, 6)} ${numbers.slice(6, 8)} ${numbers.slice(8, 10)}`;
+    } else {
+      // Generic formatting: add spaces every 3-4 digits
+      if (numbers.length <= 3) return numbers;
+      if (numbers.length <= 7) return `${numbers.slice(0, 3)} ${numbers.slice(3)}`;
+      if (numbers.length <= 10) return `${numbers.slice(0, 3)} ${numbers.slice(3, 6)} ${numbers.slice(6)}`;
+      return `${numbers.slice(0, 3)} ${numbers.slice(3, 6)} ${numbers.slice(6, 9)} ${numbers.slice(9)}`;
+    }
+  };
+
+  const getMaxLength = (countryCode: string) => {
+    // Set reasonable max lengths based on country
+    switch (countryCode) {
+      case '+1': return 14; // (123) 456-7890
+      case '+44': return 12; // 07123 456789
+      case '+33': return 14; // 01 23 45 67 89
+      case '+49': return 13; // 030 12345678
+      case '+81': return 13; // 090-1234-5678
+      case '+86': return 13; // 138 0013 8000
+      default: return 15; // Generic max length
+    }
+  };
+
+  const getPlaceholder = (countryCode: string) => {
+    switch (countryCode) {
+      case '+1': return '(123) 456-7890';
+      case '+44': return '07123 456789';
+      case '+33': return '01 23 45 67 89';
+      case '+49': return '030 12345678';
+      case '+81': return '090-1234-5678';
+      case '+86': return '138 0013 8000';
+      case '+91': return '98765 43210';
+      case '+61': return '0412 345 678';
+      case '+55': return '(11) 99999-9999';
+      default: return 'Enter phone number';
+    }
   };
 
   const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!phone) return;
+    if (!phoneNumber.trim()) return;
 
     setLoading(true);
     try {
-      const cleanPhone = phone.replace(/\D/g, '');
-      const formattedPhone = `+1${cleanPhone}`;
+      // Clean the phone number and combine with country code
+      const cleanPhone = phoneNumber.replace(/\D/g, '');
+      const fullPhoneNumber = `${countryCode}${cleanPhone}`;
+
+      console.log('Attempting to send OTP to:', fullPhoneNumber);
 
       const { error } = await supabase.auth.signInWithOtp({
-        phone: formattedPhone,
+        phone: fullPhoneNumber,
       });
 
       if (error) throw error;
@@ -52,9 +157,10 @@ const PhoneAuth: React.FC<PhoneAuthProps> = ({ onBack, onComplete, showBackButto
         description: "Check your phone for the verification code."
       });
     } catch (error: any) {
+      console.error('Phone auth error:', error);
       toast({
         title: "Error",
-        description: error.message,
+        description: error.message || "Failed to send verification code. Please check your phone number.",
         variant: "destructive"
       });
     }
@@ -67,11 +173,11 @@ const PhoneAuth: React.FC<PhoneAuthProps> = ({ onBack, onComplete, showBackButto
 
     setLoading(true);
     try {
-      const cleanPhone = phone.replace(/\D/g, '');
-      const formattedPhone = `+1${cleanPhone}`;
+      const cleanPhone = phoneNumber.replace(/\D/g, '');
+      const fullPhoneNumber = `${countryCode}${cleanPhone}`;
 
       const { data, error } = await supabase.auth.verifyOtp({
-        phone: formattedPhone,
+        phone: fullPhoneNumber,
         token: otp,
         type: 'sms'
       });
@@ -191,7 +297,7 @@ const PhoneAuth: React.FC<PhoneAuthProps> = ({ onBack, onComplete, showBackButto
             
             <CardDescription className="text-slate-300">
               {step === 'phone' && 'We\'ll send you a verification code'}
-              {step === 'otp' && `We sent a code to ${phone}`}
+              {step === 'otp' && `We sent a code to ${countryCode} ${phoneNumber}`}
               {step === 'profile' && 'Tell us a bit about yourself'}
             </CardDescription>
           </CardHeader>
@@ -201,26 +307,58 @@ const PhoneAuth: React.FC<PhoneAuthProps> = ({ onBack, onComplete, showBackButto
               <>
                 <form onSubmit={handlePhoneSubmit} className="space-y-4">
                   <div className="space-y-2">
+                    <Label htmlFor="country" className="text-white">Country</Label>
+                    <Select value={countryCode} onValueChange={setCountryCode}>
+                      <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-800 border-slate-700 max-h-60">
+                        {countryCodes.map((country) => (
+                          <SelectItem 
+                            key={country.code} 
+                            value={country.code}
+                            className="text-white hover:bg-slate-700"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <span>{country.flag}</span>
+                              <span>{country.code}</span>
+                              <span className="text-slate-400">{country.country}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
                     <Label htmlFor="phone" className="text-white">Phone Number</Label>
-                    <div className="relative">
-                      <Smartphone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-                      <Input
-                        id="phone"
-                        type="tel"
-                        placeholder="123-456-7890"
-                        value={phone}
-                        onChange={(e) => setPhone(formatPhoneNumber(e.target.value))}
-                        className="bg-white/10 border-white/20 text-white placeholder-slate-400 pl-12"
-                        maxLength={12}
-                        required
-                      />
+                    <div className="flex space-x-2">
+                      <div className="bg-white/10 border border-white/20 rounded-md px-3 py-2 text-white font-medium min-w-fit">
+                        {countryCode}
+                      </div>
+                      <div className="relative flex-1">
+                        <Smartphone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+                        <Input
+                          id="phone"
+                          type="tel"
+                          placeholder={getPlaceholder(countryCode)}
+                          value={phoneNumber}
+                          onChange={(e) => setPhoneNumber(formatPhoneNumber(e.target.value, countryCode))}
+                          className="bg-white/10 border-white/20 text-white placeholder-slate-400 pl-12"
+                          maxLength={getMaxLength(countryCode)}
+                          required
+                        />
+                      </div>
                     </div>
+                    <p className="text-xs text-slate-400">
+                      Enter your phone number without the country code
+                    </p>
                   </div>
                   
                   <Button 
                     type="submit" 
                     className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700"
-                    disabled={loading || !phone}
+                    disabled={loading || !phoneNumber.trim()}
                   >
                     {loading ? "Sending..." : "Send Code"}
                   </Button>
