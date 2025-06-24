@@ -4,9 +4,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Users, Settings, Share2, Crown, User } from 'lucide-react';
+import { Plus, Users, Share2 } from 'lucide-react';
 import CreateGroupModal from './CreateGroupModal';
 import GroupCard from './GroupCard';
 import JoinGroupModal from './JoinGroupModal';
@@ -162,15 +161,17 @@ const GroupsManager = () => {
       {/* Modals */}
       {showCreateModal && (
         <CreateGroupModal
+          isOpen={showCreateModal}
           onClose={() => setShowCreateModal(false)}
-          onGroupCreated={handleGroupCreated}
+          onSuccess={handleGroupCreated}
         />
       )}
 
       {showJoinModal && (
         <JoinGroupModal
+          isOpen={showJoinModal}
           onClose={() => setShowJoinModal(false)}
-          onGroupJoined={handleGroupJoined}
+          onSuccess={handleGroupJoined}
         />
       )}
     </div>

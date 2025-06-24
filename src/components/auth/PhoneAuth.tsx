@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,9 +10,11 @@ import { ArrowLeft, Smartphone, Apple } from 'lucide-react';
 
 interface PhoneAuthProps {
   onBack: () => void;
+  onComplete?: () => void;
+  showBackButton?: boolean;
 }
 
-const PhoneAuth: React.FC<PhoneAuthProps> = ({ onBack }) => {
+const PhoneAuth: React.FC<PhoneAuthProps> = ({ onBack, onComplete, showBackButton = true }) => {
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
   const [fullName, setFullName] = useState('');
@@ -85,6 +86,7 @@ const PhoneAuth: React.FC<PhoneAuthProps> = ({ onBack }) => {
           title: "Welcome back!",
           description: "You've been signed in successfully."
         });
+        onComplete?.();
       }
     } catch (error: any) {
       toast({
@@ -130,6 +132,8 @@ const PhoneAuth: React.FC<PhoneAuthProps> = ({ onBack }) => {
           title: "Profile Created!",
           description: "Welcome to DRNKUP! Let's get the party started."
         });
+        
+        onComplete?.();
       }
     } catch (error: any) {
       toast({
@@ -165,13 +169,15 @@ const PhoneAuth: React.FC<PhoneAuthProps> = ({ onBack }) => {
       <div className="w-full max-w-md">
         <Card className="bg-black/40 backdrop-blur-xl border-white/20">
           <CardHeader className="text-center">
-            <Button
-              variant="ghost"
-              onClick={onBack}
-              className="absolute top-4 left-4 text-white hover:bg-white/10 p-2"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
+            {showBackButton && (
+              <Button
+                variant="ghost"
+                onClick={onBack}
+                className="absolute top-4 left-4 text-white hover:bg-white/10 p-2"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+            )}
             
             <div className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent mb-2">
               DRNKUP

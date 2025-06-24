@@ -3,19 +3,36 @@ import React, { useState } from 'react';
 import OnboardingFlow from './onboarding/OnboardingFlow';
 import PhoneAuth from './auth/PhoneAuth';
 
-const Auth = () => {
-  const [showAuth, setShowAuth] = useState(false);
+interface AuthProps {
+  onOnboardingComplete: () => void;
+  skipOnboarding?: boolean;
+}
+
+const Auth: React.FC<AuthProps> = ({ onOnboardingComplete, skipOnboarding = false }) => {
+  const [showAuth, setShowAuth] = useState(skipOnboarding);
 
   const handleOnboardingComplete = () => {
     setShowAuth(true);
   };
 
   const handleBackToOnboarding = () => {
-    setShowAuth(false);
+    if (!skipOnboarding) {
+      setShowAuth(false);
+    }
+  };
+
+  const handleAuthComplete = () => {
+    onOnboardingComplete();
   };
 
   if (showAuth) {
-    return <PhoneAuth onBack={handleBackToOnboarding} />;
+    return (
+      <PhoneAuth 
+        onBack={handleBackToOnboarding} 
+        onComplete={handleAuthComplete}
+        showBackButton={!skipOnboarding}
+      />
+    );
   }
 
   return <OnboardingFlow onComplete={handleOnboardingComplete} />;

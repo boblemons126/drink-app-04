@@ -24,6 +24,7 @@ const AppContent = () => {
   const [activeTab, setActiveTab] = useState('home');
   const [showSetup, setShowSetup] = useState(false);
   const [hasCompletedSetup, setHasCompletedSetup] = useState(false);
+  const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false);
   const [drinkPrices, setDrinkPrices] = useState<DrinkType[]>([
     { id: 'beer', name: 'Beer', price: 6.50, emoji: '🍺' },
     { id: 'wine', name: 'Wine', price: 8.00, emoji: '🍷' },
@@ -33,6 +34,12 @@ const AppContent = () => {
   ]);
 
   useEffect(() => {
+    // Check if user has seen onboarding before (even without authentication)
+    const onboardingSeen = localStorage.getItem('onboardingSeen');
+    if (onboardingSeen) {
+      setHasSeenOnboarding(true);
+    }
+
     if (user) {
       // Check if user has completed setup before
       const savedPrices = localStorage.getItem('drinkPrices');
@@ -65,6 +72,11 @@ const AppContent = () => {
     setActiveTab(tab);
   };
 
+  const handleOnboardingComplete = () => {
+    setHasSeenOnboarding(true);
+    localStorage.setItem('onboardingSeen', 'true');
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
@@ -76,8 +88,14 @@ const AppContent = () => {
     );
   }
 
+  // Show onboarding to all users who haven't seen it yet (even if they're already authenticated)
+  if (!hasSeenOnboarding) {
+    return <Auth onOnboardingComplete={handleOnboardingComplete} />;
+  }
+
+  // Show auth flow for unauthenticated users who have seen onboarding
   if (!user) {
-    return <Auth />;
+    return <Auth onOnboardingComplete={handleOnboardingComplete} skipOnboarding={true} />;
   }
 
   if (showSetup) {
