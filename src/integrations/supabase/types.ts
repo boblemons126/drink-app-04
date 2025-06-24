@@ -9,16 +9,284 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      group_members: {
+        Row: {
+          emergency_contact: string | null
+          group_id: string
+          id: string
+          joined_at: string
+          last_seen: string | null
+          nickname: string | null
+          role: Database["public"]["Enums"]["group_member_role"]
+          status: Database["public"]["Enums"]["group_member_status"]
+          user_id: string
+        }
+        Insert: {
+          emergency_contact?: string | null
+          group_id: string
+          id?: string
+          joined_at?: string
+          last_seen?: string | null
+          nickname?: string | null
+          role?: Database["public"]["Enums"]["group_member_role"]
+          status?: Database["public"]["Enums"]["group_member_status"]
+          user_id: string
+        }
+        Update: {
+          emergency_contact?: string | null
+          group_id?: string
+          id?: string
+          joined_at?: string
+          last_seen?: string | null
+          nickname?: string | null
+          role?: Database["public"]["Enums"]["group_member_role"]
+          status?: Database["public"]["Enums"]["group_member_status"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      groups: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          created_by: string
+          emoji: string | null
+          id: string
+          invite_code: string
+          member_count: number
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          created_by: string
+          emoji?: string | null
+          id?: string
+          invite_code: string
+          member_count?: number
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          created_by?: string
+          emoji?: string | null
+          id?: string
+          invite_code?: string
+          member_count?: number
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          updated_at: string
+          username: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id: string
+          updated_at?: string
+          username: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          username?: string
+        }
+        Relationships: []
+      }
+      session_confirmations: {
+        Row: {
+          confirmed_at: string
+          dietary_notes: string | null
+          emergency_contact: string
+          has_eaten: boolean
+          id: string
+          last_meal_hours_ago: number | null
+          personal_budget: number | null
+          session_id: string
+          special_notes: string | null
+          transport_method: string
+          user_id: string
+        }
+        Insert: {
+          confirmed_at?: string
+          dietary_notes?: string | null
+          emergency_contact: string
+          has_eaten: boolean
+          id?: string
+          last_meal_hours_ago?: number | null
+          personal_budget?: number | null
+          session_id: string
+          special_notes?: string | null
+          transport_method: string
+          user_id: string
+        }
+        Update: {
+          confirmed_at?: string
+          dietary_notes?: string | null
+          emergency_contact?: string
+          has_eaten?: boolean
+          id?: string
+          last_meal_hours_ago?: number | null
+          personal_budget?: number | null
+          session_id?: string
+          special_notes?: string | null
+          transport_method?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_confirmations_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      session_invitations: {
+        Row: {
+          id: string
+          invited_at: string
+          responded_at: string | null
+          session_id: string
+          status: Database["public"]["Enums"]["invitation_status"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          invited_at?: string
+          responded_at?: string | null
+          session_id: string
+          status?: Database["public"]["Enums"]["invitation_status"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          invited_at?: string
+          responded_at?: string | null
+          session_id?: string
+          status?: Database["public"]["Enums"]["invitation_status"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_invitations_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sessions: {
+        Row: {
+          actual_start_time: string | null
+          budget_type: Database["public"]["Enums"]["budget_type"]
+          cover_photo_url: string | null
+          created_at: string
+          description: string | null
+          end_time: string | null
+          group_id: string
+          host_id: string
+          id: string
+          planned_start_time: string
+          primary_venue: string | null
+          session_date: string
+          status: Database["public"]["Enums"]["session_status"]
+          title: string
+          transport_type: Database["public"]["Enums"]["transport_type"]
+          updated_at: string
+          video_visibility: Database["public"]["Enums"]["video_visibility"]
+        }
+        Insert: {
+          actual_start_time?: string | null
+          budget_type?: Database["public"]["Enums"]["budget_type"]
+          cover_photo_url?: string | null
+          created_at?: string
+          description?: string | null
+          end_time?: string | null
+          group_id: string
+          host_id: string
+          id?: string
+          planned_start_time: string
+          primary_venue?: string | null
+          session_date: string
+          status?: Database["public"]["Enums"]["session_status"]
+          title: string
+          transport_type?: Database["public"]["Enums"]["transport_type"]
+          updated_at?: string
+          video_visibility?: Database["public"]["Enums"]["video_visibility"]
+        }
+        Update: {
+          actual_start_time?: string | null
+          budget_type?: Database["public"]["Enums"]["budget_type"]
+          cover_photo_url?: string | null
+          created_at?: string
+          description?: string | null
+          end_time?: string | null
+          group_id?: string
+          host_id?: string
+          id?: string
+          planned_start_time?: string
+          primary_venue?: string | null
+          session_date?: string
+          status?: Database["public"]["Enums"]["session_status"]
+          title?: string
+          transport_type?: Database["public"]["Enums"]["transport_type"]
+          updated_at?: string
+          video_visibility?: Database["public"]["Enums"]["video_visibility"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sessions_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_invite_code: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
-      [_ in never]: never
+      budget_type: "individual" | "shared"
+      group_member_role: "admin" | "member"
+      group_member_status: "active" | "inactive"
+      invitation_status: "pending" | "accepted" | "declined"
+      session_status: "planning" | "active" | "completed"
+      transport_type: "designated_driver" | "rideshare"
+      video_visibility: "immediate" | "recap_only"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -133,6 +401,14 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      budget_type: ["individual", "shared"],
+      group_member_role: ["admin", "member"],
+      group_member_status: ["active", "inactive"],
+      invitation_status: ["pending", "accepted", "declined"],
+      session_status: ["planning", "active", "completed"],
+      transport_type: ["designated_driver", "rideshare"],
+      video_visibility: ["immediate", "recap_only"],
+    },
   },
 } as const

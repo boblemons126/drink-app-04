@@ -1,12 +1,16 @@
+
 import React, { useState, useEffect } from 'react';
 import Navigation from '@/components/Navigation';
 import HomePage from '@/components/HomePage';
 import DrinkTracker from '@/components/DrinkTracker';
 import DrinkingGames from '@/components/DrinkingGames';
-import GroupManager from '@/components/GroupManager';
+import GroupsManager from '@/components/groups/GroupsManager';
+import SessionsManager from '@/components/sessions/SessionsManager';
 import MemoryCapture from '@/components/MemoryCapture';
 import DrinkSetup from '@/components/DrinkSetup';
+import Auth from '@/components/Auth';
 import { SessionProvider } from '@/hooks/use-session';
+import { AuthProvider, useAuth } from '@/hooks/use-auth';
 
 interface DrinkType {
   id: string;
@@ -15,7 +19,8 @@ interface DrinkType {
   emoji: string;
 }
 
-const Index = () => {
+const AppContent = () => {
+  const { user, loading } = useAuth();
   const [activeTab, setActiveTab] = useState('home');
   const [showSetup, setShowSetup] = useState(false);
   const [hasCompletedSetup, setHasCompletedSetup] = useState(false);
@@ -28,20 +33,22 @@ const Index = () => {
   ]);
 
   useEffect(() => {
-    // Check if user has completed setup before
-    const savedPrices = localStorage.getItem('drinkPrices');
-    const setupCompleted = localStorage.getItem('setupCompleted');
-    
-    if (savedPrices) {
-      setDrinkPrices(JSON.parse(savedPrices));
+    if (user) {
+      // Check if user has completed setup before
+      const savedPrices = localStorage.getItem('drinkPrices');
+      const setupCompleted = localStorage.getItem('setupCompleted');
+      
+      if (savedPrices) {
+        setDrinkPrices(JSON.parse(savedPrices));
+      }
+      
+      if (setupCompleted) {
+        setHasCompletedSetup(true);
+      } else {
+        setShowSetup(true);
+      }
     }
-    
-    if (setupCompleted) {
-      setHasCompletedSetup(true);
-    } else {
-      setShowSetup(true);
-    }
-  }, []);
+  }, [user]);
 
   const handleSetupComplete = (prices: DrinkType[]) => {
     setDrinkPrices(prices);
@@ -57,6 +64,21 @@ const Index = () => {
   const handleNavigate = (tab: string) => {
     setActiveTab(tab);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="text-4xl font-bold text-white">DRNKUP</div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Auth />;
+  }
 
   if (showSetup) {
     return (
@@ -77,7 +99,9 @@ const Index = () => {
       case 'games':
         return <DrinkingGames />;
       case 'group':
-        return <GroupManager />;
+        return <GroupsManager />;
+      case 'sessions':
+        return <SessionsManager />;
       case 'memories':
         return <MemoryCapture />;
       default:
@@ -86,14 +110,22 @@ const Index = () => {
   };
 
   return (
-    <SessionProvider>
-      <div className="min-h-screen">
-        <div className="relative">
-          {renderActiveTab()}
-          <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      <div className="relative">
+        {renderActiveTab()}
+        <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
-    </SessionProvider>
+    </div>
+  );
+};
+
+const Index = () => {
+  return (
+    <AuthProvider>
+      <SessionProvider>
+        <AppContent />
+      </SessionProvider>
+    </AuthProvider>
   );
 };
 
