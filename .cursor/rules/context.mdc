@@ -1,0 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+For every user prompt, always access the internet, browse local files, search the entire codebase, use GitHub repos and other external sources of documentation as needed. Always include any necessary files or code snippets from the user's project as context to maximize the accuracy and helpfulness of the answer.
+
+

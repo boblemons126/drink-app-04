@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+create a new rule. I would like you to automatically remember key bits of information about the project and tasks at hand and even keep all this information in a .md file that i can use as optional context to keep the LLM on track and optimize the accuracy of the response provided

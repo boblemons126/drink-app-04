@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+For every task, always keep the codebase optimized and organized by splitting files into individual, smaller components. Each feature or logical section (e.g., a side menu tab or feature) should be placed in its own file, and only imported into the main document as needed. This keeps file sizes small and makes the codebase easier for LLMs to read and use as context.
