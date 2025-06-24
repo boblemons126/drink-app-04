@@ -1,8 +1,8 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Users, Plus, MapPin, Share } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useSession } from '@/hooks/use-session';
 
 interface Friend {
   id: string;
@@ -12,6 +12,7 @@ interface Friend {
 }
 
 const GroupManager: React.FC = () => {
+  const { updateSquadSize, updateVenuesVisited } = useSession();
   const [friends, setFriends] = useState<Friend[]>([
     { id: '1', name: 'Alex', avatar: '🎉', status: 'online' },
     { id: '2', name: 'Sam', avatar: '🍾', status: 'online' },
@@ -20,6 +21,11 @@ const GroupManager: React.FC = () => {
   
   const [newFriendName, setNewFriendName] = useState('');
   const [inviteCode] = useState('PARTY2024');
+  const [venuesVisited, setVenuesVisited] = useState<string[]>([
+    'The Rooftop Lounge',
+    'Downtown Bar',
+    'Club Neon'
+  ]);
 
   const avatarEmojis = ['🎉', '🍾', '🥳', '🎊', '🍻', '🎭', '🎪', '🎨', '🎸', '🎤'];
 
@@ -39,6 +45,22 @@ const GroupManager: React.FC = () => {
 
   const removeFriend = (friendId: string) => {
     setFriends(friends.filter(f => f.id !== friendId));
+  };
+
+  // Update session squad size when friends list changes
+  useEffect(() => {
+    updateSquadSize(friends.length);
+  }, [friends, updateSquadSize]);
+
+  // Update session venues visited when venues list changes
+  useEffect(() => {
+    updateVenuesVisited(venuesVisited.length);
+  }, [venuesVisited, updateVenuesVisited]);
+
+  const addVenue = (venueName: string) => {
+    if (venueName.trim() && !venuesVisited.includes(venueName.trim())) {
+      setVenuesVisited([...venuesVisited, venueName.trim()]);
+    }
   };
 
   return (
@@ -126,14 +148,34 @@ const GroupManager: React.FC = () => {
         <div className="flex items-center space-x-3 p-4 bg-white/5 rounded-xl">
           <MapPin className="w-5 h-5 text-nightlife-cyan" />
           <div>
-            <p className="font-medium">The Rooftop Lounge</p>
+            <p className="font-medium">{venuesVisited[venuesVisited.length - 1] || 'No venue checked in'}</p>
             <p className="text-sm text-gray-400">Downtown • 8:45 PM</p>
           </div>
         </div>
-        <Button variant="outline" className="w-full border-nightlife-cyan/30 text-nightlife-cyan hover:bg-nightlife-cyan/20">
+        <Button 
+          variant="outline" 
+          className="w-full border-nightlife-cyan/30 text-nightlife-cyan hover:bg-nightlife-cyan/20"
+          onClick={() => {
+            const newVenue = prompt('Enter venue name:');
+            if (newVenue) addVenue(newVenue);
+          }}
+        >
           <MapPin className="w-4 h-4 mr-2" />
           Check into New Venue
         </Button>
+      </div>
+
+      {/* Venues Visited */}
+      <div className="glass-card p-6 space-y-4">
+        <h3 className="text-lg font-bold text-nightlife-cyan">Venues Visited ({venuesVisited.length})</h3>
+        <div className="space-y-2">
+          {venuesVisited.map((venue, index) => (
+            <div key={index} className="flex items-center space-x-3 p-3 bg-white/5 rounded-xl">
+              <MapPin className="w-4 h-4 text-nightlife-cyan" />
+              <span className="text-white">{venue}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Safety Section */}

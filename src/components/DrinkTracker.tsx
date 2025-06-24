@@ -1,7 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { Beer, Wine, Plus, Minus, Share, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useSession } from '@/hooks/use-session';
 
 interface Friend {
   id: string;
@@ -24,6 +24,7 @@ interface DrinkTrackerProps {
 }
 
 const DrinkTracker: React.FC<DrinkTrackerProps> = ({ onOpenSetup, drinkPrices }) => {
+  const { updateGroupTotal, updateTotalDrinks } = useSession();
   const [friends, setFriends] = useState<Friend[]>([
     {
       id: '1',
@@ -51,6 +52,15 @@ const DrinkTracker: React.FC<DrinkTrackerProps> = ({ onOpenSetup, drinkPrices })
       return { ...friend, totalSpent };
     }));
   }, [drinkPrices]);
+
+  // Update session data when friends or drink prices change
+  useEffect(() => {
+    const totalGroupSpent = friends.reduce((total, friend) => total + friend.totalSpent, 0);
+    const totalDrinks = friends.reduce((total, friend) => total + getTotalDrinks(friend), 0);
+    
+    updateGroupTotal(totalGroupSpent);
+    updateTotalDrinks(totalDrinks);
+  }, [friends, drinkPrices, updateGroupTotal, updateTotalDrinks]);
 
   const updateDrinkCount = (friendId: string, drinkType: string, change: number) => {
     setFriends(prev => prev.map(friend => {

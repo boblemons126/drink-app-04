@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { Beer, Users, Share, Mic, Settings, Play, TrendingUp, MapPin, Camera } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useSession } from '@/hooks/use-session';
 
 interface HomePageProps {
   onNavigate: (tab: string) => void;
@@ -9,6 +9,8 @@ interface HomePageProps {
 }
 
 const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSetup }) => {
+  const { sessionData, startNewSession, resetSession } = useSession();
+
   const features = [
     {
       id: 'drinks',
@@ -16,7 +18,7 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSetup }) => {
       description: 'Track drinks and spending with your crew',
       icon: Beer,
       color: 'from-blue-500 to-cyan-500',
-      stats: '12 drinks tonight'
+      stats: `${sessionData.totalDrinks} drinks tonight`
     },
     {
       id: 'games',
@@ -32,7 +34,7 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSetup }) => {
       description: 'Manage your night out crew',
       icon: Users,
       color: 'from-green-500 to-emerald-500',
-      stats: '4 friends online'
+      stats: `${sessionData.squadSize} friends online`
     },
     {
       id: 'memories',
@@ -95,24 +97,53 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSetup }) => {
 
         {/* Current Status */}
         <div className="liquid-glass rounded-3xl p-6 space-y-4">
-          <h2 className="text-xl font-bold text-slate-800 flex items-center">
-            <TrendingUp className="w-6 h-6 mr-2 text-green-500" />
-            Tonight's Vibe
-          </h2>
-          <div className="grid grid-cols-3 gap-4 text-center">
-            <div>
-              <p className="text-2xl font-bold text-blue-600">$48.50</p>
-              <p className="text-sm text-slate-600">Group Total</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-purple-600">3</p>
-              <p className="text-sm text-slate-600">Venues</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-green-600">4</p>
-              <p className="text-sm text-slate-600">Squad Size</p>
-            </div>
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold text-slate-800 flex items-center">
+              <TrendingUp className="w-6 h-6 mr-2 text-green-500" />
+              Tonight's Vibe
+            </h2>
+            {sessionData.sessionStartTime && (
+              <Button
+                onClick={resetSession}
+                variant="outline"
+                size="sm"
+                className="text-xs px-2 py-1"
+              >
+                Reset Session
+              </Button>
+            )}
           </div>
+          
+          {!sessionData.sessionStartTime ? (
+            <div className="text-center py-8">
+              <div className="text-6xl mb-4">🎉</div>
+              <h3 className="text-lg font-semibold text-slate-700 mb-2">No Active Session</h3>
+              <p className="text-slate-600 mb-4">Start tracking your night out to see your stats here!</p>
+              <Button
+                onClick={startNewSession}
+                className="liquid-glass-button px-6 py-3 rounded-xl"
+              >
+                Start New Session
+              </Button>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div>
+                  <p className="text-2xl font-bold text-blue-600">${sessionData.groupTotal.toFixed(2)}</p>
+                  <p className="text-sm text-slate-600">Group Total</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-purple-600">{sessionData.venuesVisited}</p>
+                  <p className="text-sm text-slate-600">Venues</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-green-600">{sessionData.squadSize}</p>
+                  <p className="text-sm text-slate-600">Squad Size</p>
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Quick Actions */}

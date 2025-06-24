@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Navigation from '@/components/Navigation';
 import HomePage from '@/components/HomePage';
@@ -7,6 +6,7 @@ import DrinkingGames from '@/components/DrinkingGames';
 import GroupManager from '@/components/GroupManager';
 import MemoryCapture from '@/components/MemoryCapture';
 import DrinkSetup from '@/components/DrinkSetup';
+import { SessionProvider } from '@/hooks/use-session';
 
 interface DrinkType {
   id: string;
@@ -86,12 +86,14 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen">
-      <div className="relative">
-        {renderActiveTab()}
-        <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
+    <SessionProvider>
+      <div className="min-h-screen">
+        <div className="relative">
+          {renderActiveTab()}
+          <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
+        </div>
       </div>
-    </div>
+    </SessionProvider>
   );
 };
 
