@@ -1,27 +1,25 @@
 
 import React, { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/use-auth';
-import { useToast } from '@/hooks/use-toast';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { X } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/use-auth';
 
 interface CreateGroupModalProps {
+  isOpen: boolean;
   onClose: () => void;
-  onGroupCreated: () => void;
+  onSuccess: () => void;
 }
 
-const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ onClose, onGroupCreated }) => {
-  const { user } = useAuth();
-  const { toast } = useToast();
+const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, onSuccess }) => {
   const [name, setName] = useState('');
   const [emoji, setEmoji] = useState('🎉');
   const [loading, setLoading] = useState(false);
-
-  const emojiOptions = ['🎉', '🍻', '🎊', '🥳', '🎪', '🎭', '🍾', '🎸', '🎤', '⭐', '🔥', '💫', '🌟', '🎨', '🎯'];
+  const { toast } = useToast();
+  const { user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,15 +27,13 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ onClose, onGroupCre
 
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('groups')
-        .insert([{
+        .insert({
           name: name.trim(),
           emoji,
           created_by: user.id
-        }])
-        .select()
-        .single();
+        });
 
       if (error) throw error;
 
@@ -46,77 +42,66 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ onClose, onGroupCre
         description: `${emoji} ${name} has been created successfully.`
       });
 
-      onGroupCreated();
+      setName('');
+      setEmoji('🎉');
+      onSuccess();
+      onClose();
     } catch (error: any) {
       toast({
-        title: "Error creating group",
+        title: "Error",
         description: error.message,
         variant: "destructive"
       });
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   };
 
   return (
-    <Dialog open onOpenChange={onClose}>
-      <DialogContent className="bg-slate-900 border-slate-700 text-white">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="bg-black/90 backdrop-blur-xl border-white/20 text-white">
         <DialogHeader>
-          <DialogTitle>Create New Group</DialogTitle>
-          <DialogDescription className="text-slate-400">
-            Create a new friend group for your night out adventures
-          </DialogDescription>
+          <DialogTitle className="text-xl font-bold text-center">Create New Group</DialogTitle>
         </DialogHeader>
-
+        
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="group-name">Group Name</Label>
+            <Label htmlFor="emoji" className="text-white">Group Emoji</Label>
             <Input
-              id="group-name"
-              type="text"
-              placeholder="e.g., Weekend Crew, Work Buddies..."
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="bg-white/10 border-white/20 text-white placeholder-slate-400"
-              required
-              maxLength={50}
+              id="emoji"
+              value={emoji}
+              onChange={(e) => setEmoji(e.target.value)}
+              className="bg-white/10 border-white/20 text-white text-center text-2xl h-12"
+              maxLength={2}
             />
           </div>
 
           <div className="space-y-2">
-            <Label>Choose Emoji</Label>
-            <div className="grid grid-cols-5 gap-2">
-              {emojiOptions.map((emojiOption) => (
-                <Button
-                  key={emojiOption}
-                  type="button"
-                  variant={emoji === emojiOption ? "default" : "outline"}
-                  className={`text-2xl h-12 ${
-                    emoji === emojiOption 
-                      ? 'bg-blue-500 hover:bg-blue-600' 
-                      : 'bg-white/10 border-white/20 hover:bg-white/20'
-                  }`}
-                  onClick={() => setEmoji(emojiOption)}
-                >
-                  {emojiOption}
-                </Button>
-              ))}
-            </div>
+            <Label htmlFor="groupName" className="text-white">Group Name</Label>
+            <Input
+              id="groupName"
+              type="text"
+              placeholder="e.g., Weekend Crew, Work Buddies"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="bg-white/10 border-white/20 text-white placeholder-slate-400"
+              required
+            />
           </div>
 
-          <div className="flex justify-end space-x-3">
+          <div className="flex gap-3 pt-4">
             <Button
               type="button"
               variant="outline"
               onClick={onClose}
-              className="border-slate-600 text-slate-300 hover:bg-slate-800"
+              className="flex-1 bg-white/10 border-white/20 text-white hover:bg-white/20"
+              disabled={loading}
             >
               Cancel
             </Button>
             <Button
               type="submit"
+              className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
               disabled={loading || !name.trim()}
-              className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
             >
               {loading ? "Creating..." : "Create Group"}
             </Button>
