@@ -1,133 +1,123 @@
 
 import React, { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/use-auth';
-import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/use-auth';
 
 interface JoinGroupModalProps {
-  onClose: () => void;
-  onGroupJoined: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSuccess: () => void;
 }
 
-const JoinGroupModal: React.FC<JoinGroupModalProps> = ({ onClose, onGroupJoined }) => {
-  const { user } = useAuth();
-  const { toast } = useToast();
+const JoinGroupModal: React.FC<JoinGroupModalProps> = ({ open, onOpenChange, onSuccess }) => {
   const [inviteCode, setInviteCode] = useState('');
   const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
+  const { user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !inviteCode.trim()) return;
+    if (!inviteCode.trim() || !user) return;
 
     setLoading(true);
     try {
-      // First, find the group by invite code
+      // First, check if the group exists
       const { data: group, error: groupError } = await supabase
         .from('groups')
-        .select('*')
+        .select('id, name, emoji')
         .eq('invite_code', inviteCode.trim().toUpperCase())
         .single();
 
-      if (groupError) {
-        throw new Error('Invalid invite code');
+      if (groupError || !group) {
+        throw new Error('Invalid invite code. Please check and try again.');
       }
 
       // Check if user is already a member
       const { data: existingMember } = await supabase
         .from('group_members')
-        .select('*')
+        .select('id')
         .eq('group_id', group.id)
         .eq('user_id', user.id)
         .single();
 
       if (existingMember) {
-        if (existingMember.status === 'active') {
-          throw new Error('You are already a member of this group');
-        } else {
-          // Reactivate membership
-          const { error: updateError } = await supabase
-            .from('group_members')
-            .update({ status: 'active', joined_at: new Date().toISOString() })
-            .eq('id', existingMember.id);
-
-          if (updateError) throw updateError;
-        }
-      } else {
-        // Add new member
-        const { error: insertError } = await supabase
-          .from('group_members')
-          .insert([{
-            group_id: group.id,
-            user_id: user.id,
-            role: 'member',
-            status: 'active'
-          }]);
-
-        if (insertError) throw insertError;
+        throw new Error('You are already a member of this group.');
       }
+
+      // Add user to the group
+      const { error: memberError } = await supabase
+        .from('group_members')
+        .insert([{
+          group_id: group.id,
+          user_id: user.id,
+          role: 'member',
+          status: 'active'
+        }]);
+
+      if (memberError) throw memberError;
 
       toast({
         title: "Joined Group!",
         description: `Welcome to ${group.emoji} ${group.name}!`
       });
 
-      onGroupJoined();
+      setInviteCode('');
+      onSuccess();
+      onOpenChange(false);
     } catch (error: any) {
+      console.error('Error joining group:', error);
       toast({
-        title: "Error joining group",
-        description: error.message,
+        title: "Error",
+        description: error.message || "Failed to join group. Please try again.",
         variant: "destructive"
       });
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   };
 
   return (
-    <Dialog open onOpenChange={onClose}>
-      <DialogContent className="bg-slate-900 border-slate-700 text-white">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="bg-black/90 backdrop-blur-xl border-white/20 text-white">
         <DialogHeader>
-          <DialogTitle>Join Group</DialogTitle>
-          <DialogDescription className="text-slate-400">
-            Enter the invite code to join an existing group
-          </DialogDescription>
+          <DialogTitle className="text-xl font-bold text-center">Join Group</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="invite-code">Invite Code</Label>
+            <Label htmlFor="inviteCode">Invite Code</Label>
             <Input
-              id="invite-code"
+              id="inviteCode"
               type="text"
-              placeholder="Enter 8-character invite code"
+              placeholder="Enter 8-character code"
               value={inviteCode}
               onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
-              className="bg-white/10 border-white/20 text-white placeholder-slate-400 font-mono text-center text-lg"
-              required
+              className="bg-white/10 border-white/20 text-white placeholder-slate-400 font-mono text-center text-lg tracking-wider"
               maxLength={8}
+              required
             />
-            <p className="text-xs text-slate-500">
-              Ask a group member for the invite code to join their group
+            <p className="text-xs text-slate-400 text-center">
+              Ask your friend for their group's invite code
             </p>
           </div>
 
-          <div className="flex justify-end space-x-3">
+          <div className="flex gap-2 pt-4">
             <Button
               type="button"
               variant="outline"
-              onClick={onClose}
-              className="border-slate-600 text-slate-300 hover:bg-slate-800"
+              onClick={() => onOpenChange(false)}
+              className="flex-1 bg-white/10 border-white/20 text-white hover:bg-white/20"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={loading || inviteCode.length !== 8}
-              className="bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700"
+              className="flex-1 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
             >
               {loading ? "Joining..." : "Join Group"}
             </Button>

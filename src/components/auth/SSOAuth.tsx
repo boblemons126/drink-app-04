@@ -4,10 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Mail, Lock, User, Github, Apple, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Mail, Lock, User, Apple, Eye, EyeOff } from 'lucide-react';
 
 interface SSOAuthProps {
   onBack: () => void;
@@ -22,42 +21,10 @@ const SSOAuth: React.FC<SSOAuthProps> = ({ onBack, onComplete, showBackButton = 
   const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState('');
   const [step, setStep] = useState<'auth' | 'profile'>('auth');
-  const [activeTab, setActiveTab] = useState('signin');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { toast } = useToast();
-
-  const handleEmailSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.trim() || !password.trim()) return;
-
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password: password
-      });
-
-      if (error) throw error;
-
-      if (data.user) {
-        toast({
-          title: "Welcome back!",
-          description: "You've been signed in successfully."
-        });
-        onComplete?.();
-      }
-    } catch (error: any) {
-      console.error('Sign in error:', error);
-      toast({
-        title: "Sign In Error",
-        description: error.message || "Invalid email or password. Please try again.",
-        variant: "destructive"
-      });
-    }
-    setLoading(false);
-  };
 
   const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,8 +114,8 @@ const SSOAuth: React.FC<SSOAuthProps> = ({ onBack, onComplete, showBackButton = 
         if (profileError) throw profileError;
 
         toast({
-          title: "Profile Created!",
-          description: "Welcome to DRNKUP! Let's get the party started."
+          title: "Welcome to DRNKUP!",
+          description: "Your profile has been created. Let's get the party started!"
         });
         
         onComplete?.();
@@ -164,7 +131,7 @@ const SSOAuth: React.FC<SSOAuthProps> = ({ onBack, onComplete, showBackButton = 
     setLoading(false);
   };
 
-  const handleSocialAuth = async (provider: 'google' | 'github' | 'apple') => {
+  const handleSocialAuth = async (provider: 'google' | 'apple') => {
     setLoading(true);
     try {
       const { error } = await supabase.auth.signInWithOAuth({
@@ -278,9 +245,9 @@ const SSOAuth: React.FC<SSOAuthProps> = ({ onBack, onComplete, showBackButton = 
               DRNKUP
             </div>
             
-            <CardTitle className="text-white">Welcome to the Party</CardTitle>
+            <CardTitle className="text-white">Join the Party</CardTitle>
             <CardDescription className="text-slate-300">
-              Sign in to your account or create a new one
+              Create your account to get started with epic nights out
             </CardDescription>
           </CardHeader>
 
@@ -311,16 +278,6 @@ const SSOAuth: React.FC<SSOAuthProps> = ({ onBack, onComplete, showBackButton = 
                 <Apple className="w-5 h-5 mr-2" />
                 Continue with Apple
               </Button>
-              
-              <Button
-                variant="outline"
-                onClick={() => handleSocialAuth('github')}
-                disabled={loading}
-                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-              >
-                <Github className="w-5 h-5 mr-2" />
-                Continue with GitHub
-              </Button>
             </div>
 
             <div className="relative">
@@ -328,148 +285,84 @@ const SSOAuth: React.FC<SSOAuthProps> = ({ onBack, onComplete, showBackButton = 
                 <span className="w-full border-t border-white/20" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-transparent px-2 text-slate-400">Or continue with email</span>
+                <span className="bg-transparent px-2 text-slate-400">Or create account with email</span>
               </div>
             </div>
 
-            {/* Email/Password Authentication */}
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 bg-white/10">
-                <TabsTrigger value="signin" className="text-white data-[state=active]:bg-white/20">
-                  Sign In
-                </TabsTrigger>
-                <TabsTrigger value="signup" className="text-white data-[state=active]:bg-white/20">
-                  Sign Up
-                </TabsTrigger>
-              </TabsList>
+            {/* Email/Password Sign Up */}
+            <form onSubmit={handleEmailSignUp} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="signup-email" className="text-white">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+                  <Input
+                    id="signup-email"
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="bg-white/10 border-white/20 text-white placeholder-slate-400 pl-12"
+                    required
+                  />
+                </div>
+              </div>
 
-              <TabsContent value="signin" className="space-y-4">
-                <form onSubmit={handleEmailSignIn} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-email" className="text-white">Email</Label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-                      <Input
-                        id="signin-email"
-                        type="email"
-                        placeholder="Enter your email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="bg-white/10 border-white/20 text-white placeholder-slate-400 pl-12"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-password" className="text-white">Password</Label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-                      <Input
-                        id="signin-password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Enter your password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="bg-white/10 border-white/20 text-white placeholder-slate-400 pl-12 pr-12"
-                        required
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-white"
-                      >
-                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                      </button>
-                    </div>
-                  </div>
-
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700"
-                    disabled={loading || !email.trim() || !password.trim()}
+              <div className="space-y-2">
+                <Label htmlFor="signup-password" className="text-white">Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+                  <Input
+                    id="signup-password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Create a password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="bg-white/10 border-white/20 text-white placeholder-slate-400 pl-12 pr-12"
+                    required
+                    minLength={8}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-white"
                   >
-                    {loading ? "Signing In..." : "Sign In"}
-                  </Button>
-                </form>
-              </TabsContent>
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+                <p className="text-xs text-slate-400">At least 8 characters</p>
+              </div>
 
-              <TabsContent value="signup" className="space-y-4">
-                <form onSubmit={handleEmailSignUp} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-email" className="text-white">Email</Label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-                      <Input
-                        id="signup-email"
-                        type="email"
-                        placeholder="Enter your email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="bg-white/10 border-white/20 text-white placeholder-slate-400 pl-12"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-password" className="text-white">Password</Label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-                      <Input
-                        id="signup-password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Create a password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="bg-white/10 border-white/20 text-white placeholder-slate-400 pl-12 pr-12"
-                        required
-                        minLength={8}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-white"
-                      >
-                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                      </button>
-                    </div>
-                    <p className="text-xs text-slate-400">At least 8 characters</p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="confirm-password" className="text-white">Confirm Password</Label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-                      <Input
-                        id="confirm-password"
-                        type={showConfirmPassword ? "text" : "password"}
-                        placeholder="Confirm your password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="bg-white/10 border-white/20 text-white placeholder-slate-400 pl-12 pr-12"
-                        required
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-white"
-                      >
-                        {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                      </button>
-                    </div>
-                  </div>
-
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700"
-                    disabled={loading || !email.trim() || !password.trim() || !confirmPassword.trim()}
+              <div className="space-y-2">
+                <Label htmlFor="confirm-password" className="text-white">Confirm Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+                  <Input
+                    id="confirm-password"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Confirm your password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="bg-white/10 border-white/20 text-white placeholder-slate-400 pl-12 pr-12"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-white"
                   >
-                    {loading ? "Creating Account..." : "Create Account"}
-                  </Button>
-                </form>
-              </TabsContent>
-            </Tabs>
+                    {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+              </div>
+
+              <Button 
+                type="submit" 
+                className="w-full bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700"
+                disabled={loading || !email.trim() || !password.trim() || !confirmPassword.trim()}
+              >
+                {loading ? "Creating Account..." : "Create Account"}
+              </Button>
+            </form>
           </CardContent>
         </Card>
 
