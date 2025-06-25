@@ -1,13 +1,13 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Smartphone, Apple } from 'lucide-react';
+import { ArrowLeft, Smartphone, Apple, Mail } from 'lucide-react';
 
 interface PhoneAuthProps {
   onBack: () => void;
@@ -67,10 +67,11 @@ const countryCodes = [
 const PhoneAuth: React.FC<PhoneAuthProps> = ({ onBack, onComplete, showBackButton = true }) => {
   const [countryCode, setCountryCode] = useState('+1');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [otp, setOtp] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState('');
-  const [step, setStep] = useState<'phone' | 'otp' | 'profile'>('phone');
+  const [step, setStep] = useState<'contact' | 'credentials' | 'profile'>('contact');
   const [loading, setLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(true);
   const { toast } = useToast();
@@ -133,61 +134,62 @@ const PhoneAuth: React.FC<PhoneAuthProps> = ({ onBack, onComplete, showBackButto
     }
   };
 
-  const handlePhoneSubmit = async (e: React.FormEvent) => {
+  const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!phoneNumber.trim()) return;
 
-    setLoading(true);
-    try {
-      // Clean the phone number and combine with country code
-      const cleanPhone = phoneNumber.replace(/\D/g, '');
-      const fullPhoneNumber = `${countryCode}${cleanPhone}`;
-
-      console.log('Attempting to send OTP to:', fullPhoneNumber);
-
-      const { error } = await supabase.auth.signInWithOtp({
-        phone: fullPhoneNumber,
-      });
-
-      if (error) throw error;
-
-      setStep('otp');
-      toast({
-        title: "Code Sent!",
-        description: "Check your phone for the verification code."
-      });
-    } catch (error: any) {
-      console.error('Phone auth error:', error);
-      toast({
-        title: "Error",
-        description: error.message || "Failed to send verification code. Please check your phone number.",
-        variant: "destructive"
-      });
-    }
-    setLoading(false);
+    // Move to credentials step
+    setStep('credentials');
   };
 
-  const handleOtpSubmit = async (e: React.FormEvent) => {
+  const handleCredentialsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!otp || otp.length !== 6) return;
+    if (!email.trim() || !password.trim()) return;
 
     setLoading(true);
     try {
       const cleanPhone = phoneNumber.replace(/\D/g, '');
       const fullPhoneNumber = `${countryCode}${cleanPhone}`;
 
-      const { data, error } = await supabase.auth.verifyOtp({
-        phone: fullPhoneNumber,
-        token: otp,
-        type: 'sms'
-      });
+      if (isSignUp) {
+        // Sign up with email and store phone number in metadata
+        const { data, error } = await supabase.auth.signUp({
+          email: email.trim(),
+          password: password.trim(),
+          options: {
+            data: {
+              phone: fullPhoneNumber,
+              full_name: fullName || ''
+            },
+            emailRedirectTo: `${window.location.origin}/`
+          }
+        });
 
-      if (error) throw error;
+        if (error) throw error;
 
-      // Check if this is a new user
-      if (data.user && !data.user.user_metadata?.full_name && isSignUp) {
-        setStep('profile');
+        if (data.user && !data.user.email_confirmed_at) {
+          toast({
+            title: "Check your email!",
+            description: "We've sent you a confirmation link to complete your registration."
+          });
+        }
+
+        // For new users, go to profile step if email is confirmed
+        if (data.user && data.user.email_confirmed_at) {
+          setStep('profile');
+        } else {
+          // If email confirmation is required, complete the flow
+          onComplete?.();
+        }
       } else {
+        // Sign in with email
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password: password.trim()
+        });
+
+        if (error) throw error;
+
         toast({
           title: "Welcome back!",
           description: "You've been signed in successfully."
@@ -195,9 +197,10 @@ const PhoneAuth: React.FC<PhoneAuthProps> = ({ onBack, onComplete, showBackButto
         onComplete?.();
       }
     } catch (error: any) {
+      console.error('Auth error:', error);
       toast({
-        title: "Invalid Code",
-        description: "Please check the code and try again.",
+        title: "Error",
+        description: error.message || "Authentication failed. Please try again.",
         variant: "destructive"
       });
     }
@@ -290,77 +293,119 @@ const PhoneAuth: React.FC<PhoneAuthProps> = ({ onBack, onComplete, showBackButto
             </div>
             
             <CardTitle className="text-white">
-              {step === 'phone' && 'Enter Your Phone Number'}
-              {step === 'otp' && 'Verify Your Number'}
+              {step === 'contact' && 'Enter Your Phone Number'}
+              {step === 'credentials' && (isSignUp ? 'Create Your Account' : 'Sign In')}
               {step === 'profile' && 'Complete Your Profile'}
             </CardTitle>
             
             <CardDescription className="text-slate-300">
-              {step === 'phone' && 'We\'ll send you a verification code'}
-              {step === 'otp' && `We sent a code to ${countryCode} ${phoneNumber}`}
+              {step === 'contact' && 'We\'ll use this to connect you with friends'}
+              {step === 'credentials' && (isSignUp ? 'Create your account to get started' : 'Welcome back! Sign in to continue')}
               {step === 'profile' && 'Tell us a bit about yourself'}
             </CardDescription>
           </CardHeader>
 
           <CardContent className="space-y-6">
-            {step === 'phone' && (
+            {step === 'contact' && (
+              <form onSubmit={handleContactSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="country" className="text-white">Country</Label>
+                  <Select value={countryCode} onValueChange={setCountryCode}>
+                    <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-800 border-slate-700 max-h-60">
+                      {countryCodes.map((country) => (
+                        <SelectItem 
+                          key={country.code} 
+                          value={country.code}
+                          className="text-white hover:bg-slate-700"
+                        >
+                          <div className="flex items-center space-x-2">
+                            <span>{country.flag}</span>
+                            <span>{country.code}</span>
+                            <span className="text-slate-400">{country.country}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="phone" className="text-white">Phone Number</Label>
+                  <div className="flex space-x-2">
+                    <div className="bg-white/10 border border-white/20 rounded-md px-3 py-2 text-white font-medium min-w-fit">
+                      {countryCode}
+                    </div>
+                    <div className="relative flex-1">
+                      <Smartphone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+                      <Input
+                        id="phone"
+                        type="tel"
+                        placeholder={getPlaceholder(countryCode)}
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(formatPhoneNumber(e.target.value, countryCode))}
+                        className="bg-white/10 border-white/20 text-white placeholder-slate-400 pl-12"
+                        maxLength={getMaxLength(countryCode)}
+                        required
+                      />
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-400">
+                    Enter your phone number without the country code
+                  </p>
+                </div>
+                
+                <Button 
+                  type="submit" 
+                  className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700"
+                  disabled={!phoneNumber.trim()}
+                >
+                  Continue
+                </Button>
+              </form>
+            )}
+
+            {step === 'credentials' && (
               <>
-                <form onSubmit={handlePhoneSubmit} className="space-y-4">
+                <form onSubmit={handleCredentialsSubmit} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="country" className="text-white">Country</Label>
-                    <Select value={countryCode} onValueChange={setCountryCode}>
-                      <SelectTrigger className="bg-white/10 border-white/20 text-white">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-slate-800 border-slate-700 max-h-60">
-                        {countryCodes.map((country) => (
-                          <SelectItem 
-                            key={country.code} 
-                            value={country.code}
-                            className="text-white hover:bg-slate-700"
-                          >
-                            <div className="flex items-center space-x-2">
-                              <span>{country.flag}</span>
-                              <span>{country.code}</span>
-                              <span className="text-slate-400">{country.country}</span>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Label htmlFor="email" className="text-white">Email</Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="Enter your email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="bg-white/10 border-white/20 text-white placeholder-slate-400 pl-12"
+                        required
+                      />
+                    </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="phone" className="text-white">Phone Number</Label>
-                    <div className="flex space-x-2">
-                      <div className="bg-white/10 border border-white/20 rounded-md px-3 py-2 text-white font-medium min-w-fit">
-                        {countryCode}
-                      </div>
-                      <div className="relative flex-1">
-                        <Smartphone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-                        <Input
-                          id="phone"
-                          type="tel"
-                          placeholder={getPlaceholder(countryCode)}
-                          value={phoneNumber}
-                          onChange={(e) => setPhoneNumber(formatPhoneNumber(e.target.value, countryCode))}
-                          className="bg-white/10 border-white/20 text-white placeholder-slate-400 pl-12"
-                          maxLength={getMaxLength(countryCode)}
-                          required
-                        />
-                      </div>
-                    </div>
-                    <p className="text-xs text-slate-400">
-                      Enter your phone number without the country code
-                    </p>
+                    <Label htmlFor="password" className="text-white">Password</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="Enter your password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="bg-white/10 border-white/20 text-white placeholder-slate-400"
+                      required
+                      minLength={6}
+                    />
                   </div>
                   
                   <Button 
                     type="submit" 
                     className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700"
-                    disabled={loading || !phoneNumber.trim()}
+                    disabled={loading || !email.trim() || !password.trim()}
                   >
-                    {loading ? "Sending..." : "Send Code"}
+                    {loading ? "Please wait..." : (isSignUp ? "Create Account" : "Sign In")}
                   </Button>
                 </form>
 
@@ -407,43 +452,6 @@ const PhoneAuth: React.FC<PhoneAuthProps> = ({ onBack, onComplete, showBackButto
                   </button>
                 </div>
               </>
-            )}
-
-            {step === 'otp' && (
-              <form onSubmit={handleOtpSubmit} className="space-y-6">
-                <div className="space-y-2">
-                  <Label className="text-white text-center block">Enter Verification Code</Label>
-                  <div className="flex justify-center">
-                    <InputOTP value={otp} onChange={setOtp} maxLength={6}>
-                      <InputOTPGroup>
-                        <InputOTPSlot index={0} className="bg-white/10 border-white/20 text-white" />
-                        <InputOTPSlot index={1} className="bg-white/10 border-white/20 text-white" />
-                        <InputOTPSlot index={2} className="bg-white/10 border-white/20 text-white" />
-                        <InputOTPSlot index={3} className="bg-white/10 border-white/20 text-white" />
-                        <InputOTPSlot index={4} className="bg-white/10 border-white/20 text-white" />
-                        <InputOTPSlot index={5} className="bg-white/10 border-white/20 text-white" />
-                      </InputOTPGroup>
-                    </InputOTP>
-                  </div>
-                </div>
-
-                <Button 
-                  type="submit" 
-                  className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700"
-                  disabled={loading || otp.length !== 6}
-                >
-                  {loading ? "Verifying..." : "Verify Code"}
-                </Button>
-
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => setStep('phone')}
-                  className="w-full text-slate-400 hover:text-white hover:bg-white/10"
-                >
-                  Resend Code
-                </Button>
-              </form>
             )}
 
             {step === 'profile' && (
