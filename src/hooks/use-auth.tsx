@@ -28,11 +28,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         console.log('Auth state changed:', event, session?.user?.id);
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+
+        // Handle profile creation for new social auth users
+        if (event === 'SIGNED_IN' && session?.user) {
+          // Check if user needs profile setup
+          setTimeout(async () => {
+            try {
+              const { data: profile } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
+
+              if (!profile && session.user.app_metadata?.provider === 'google' || session.user.app_metadata?.provider === 'apple') {
+                // Auto-create profile for social auth users
+                const fullName = session.user.user_metadata?.full_name || 
+                                session.user.user_metadata?.name || 
+                                session.user.email?.split('@')[0] || 'User';
+                
+                const username = (session.user.email?.split('@')[0] || 'user').toLowerCase().replace(/[^a-z0-9_]/g, '');
+                
+                await supabase.from('profiles').upsert([{
+                  id: session.user.id,
+                  username: username,
+                  full_name: fullName
+                }]);
+              }
+            } catch (error) {
+              console.error('Profile creation error:', error);
+            }
+          }, 100);
+        }
       }
     );
 

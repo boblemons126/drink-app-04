@@ -1,179 +1,197 @@
 
 import React, { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Users, Plus, UserPlus, Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Users, Share2 } from 'lucide-react';
-import CreateGroupModal from './CreateGroupModal';
 import GroupCard from './GroupCard';
+import CreateGroupModal from './CreateGroupModal';
 import JoinGroupModal from './JoinGroupModal';
 
 interface Group {
   id: string;
   name: string;
   emoji: string;
-  invite_code: string;
   member_count: number;
+  invite_code: string;
   created_at: string;
-  avatar_url?: string;
-  user_role?: 'admin' | 'member';
 }
 
-const GroupsManager = () => {
-  const { user } = useAuth();
-  const { toast } = useToast();
+const GroupsManager: React.FC = () => {
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showJoinModal, setShowJoinModal] = useState(false);
+  const { user } = useAuth();
+  const { toast } = useToast();
 
   const fetchGroups = async () => {
     if (!user) return;
 
     try {
       const { data, error } = await supabase
-        .from('groups')
+        .from('group_members')
         .select(`
-          *,
-          group_members!inner(role)
+          groups (
+            id,
+            name,
+            emoji,
+            member_count,
+            invite_code,
+            created_at
+          )
         `)
-        .eq('group_members.user_id', user.id)
-        .eq('group_members.status', 'active')
-        .order('created_at', { ascending: false });
+        .eq('user_id', user.id)
+        .eq('status', 'active');
 
       if (error) throw error;
 
-      const groupsWithRole = data?.map(group => ({
-        ...group,
-        user_role: group.group_members[0]?.role
-      })) || [];
+      const userGroups = data
+        ?.filter(item => item.groups)
+        .map(item => item.groups)
+        .filter(Boolean) as Group[];
 
-      setGroups(groupsWithRole);
+      setGroups(userGroups || []);
     } catch (error: any) {
+      console.error('Error fetching groups:', error);
       toast({
-        title: "Error loading groups",
-        description: error.message,
+        title: "Error",
+        description: "Failed to load groups. Please try again.",
         variant: "destructive"
       });
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
     fetchGroups();
   }, [user]);
 
-  const handleGroupCreated = () => {
-    fetchGroups();
-    setShowCreateModal(false);
-  };
+  const filteredGroups = groups.filter(group =>
+    group.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  const handleGroupJoined = () => {
+  const handleGroupSuccess = () => {
     fetchGroups();
-    setShowJoinModal(false);
   };
 
   if (loading) {
     return (
-      <div className="p-6 space-y-6">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-white/10 rounded"></div>
-          <div className="grid gap-4">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="h-32 bg-white/10 rounded-xl"></div>
-            ))}
-          </div>
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
       </div>
     );
   }
 
   return (
-    <div className="p-6 pb-32 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-white">My Groups</h1>
-          <p className="text-slate-400">Manage your friend circles</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4 pb-24">
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="text-center space-y-2">
+          <h1 className="text-3xl font-bold text-white">Your Groups</h1>
+          <p className="text-slate-300">Manage your friend circles and plan epic nights out</p>
         </div>
-        <div className="flex space-x-2">
+
+        {/* Action Buttons */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Button
+            onClick={() => setShowCreateModal(true)}
+            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white h-14"
+          >
+            <Plus className="w-5 h-5 mr-2" />
+            Create New Group
+          </Button>
+          
           <Button
             onClick={() => setShowJoinModal(true)}
             variant="outline"
-            className="border-blue-500/30 text-blue-400 hover:bg-blue-500/20"
+            className="bg-white/10 border-white/20 text-white hover:bg-white/20 h-14"
           >
-            <Share2 className="w-4 h-4 mr-2" />
+            <UserPlus className="w-5 h-5 mr-2" />
             Join Group
           </Button>
-          <Button
-            onClick={() => setShowCreateModal(true)}
-            className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Create Group
-          </Button>
         </div>
-      </div>
 
-      {/* Groups Grid */}
-      {groups.length === 0 ? (
-        <Card className="bg-white/5 border-white/10">
-          <CardContent className="text-center py-12">
-            <Users className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-            <CardTitle className="text-white mb-2">No Groups Yet</CardTitle>
-            <CardDescription className="text-slate-400 mb-6">
-              Create your first group or join an existing one to get started
-            </CardDescription>
-            <div className="flex justify-center space-x-3">
-              <Button
-                onClick={() => setShowCreateModal(true)}
-                className="bg-gradient-to-r from-blue-500 to-purple-600"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Create Group
-              </Button>
-              <Button
-                onClick={() => setShowJoinModal(true)}
-                variant="outline"
-                className="border-blue-500/30 text-blue-400"
-              >
-                <Share2 className="w-4 h-4 mr-2" />
-                Join Group
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid gap-4">
-          {groups.map((group) => (
-            <GroupCard
-              key={group.id}
-              group={group}
-              onGroupUpdated={fetchGroups}
+        {/* Search */}
+        {groups.length > 0 && (
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+            <Input
+              placeholder="Search your groups..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="bg-white/10 border-white/20 text-white placeholder-slate-400 pl-12"
             />
-          ))}
-        </div>
-      )}
+          </div>
+        )}
 
-      {/* Modals */}
-      {showCreateModal && (
+        {/* Groups List */}
+        {filteredGroups.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredGroups.map((group) => (
+              <GroupCard
+                key={group.id}
+                group={group}
+                onUpdate={handleGroupSuccess}
+              />
+            ))}
+          </div>
+        ) : groups.length === 0 ? (
+          <Card className="bg-black/40 backdrop-blur-xl border-white/20">
+            <CardContent className="text-center py-12">
+              <Users className="w-16 h-16 text-slate-400 mx-auto mb-4" />
+              <CardTitle className="text-white mb-2">No Groups Yet</CardTitle>
+              <p className="text-slate-300 mb-6">
+                Create your first group or join an existing one to get started!
+              </p>
+              <div className="space-y-3">
+                <Button
+                  onClick={() => setShowCreateModal(true)}
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white w-full"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Your First Group
+                </Button>
+                <Button
+                  onClick={() => setShowJoinModal(true)}
+                  variant="outline"
+                  className="bg-white/10 border-white/20 text-white hover:bg-white/20 w-full"
+                >
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  Join Existing Group
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className="bg-black/40 backdrop-blur-xl border-white/20">
+            <CardContent className="text-center py-12">
+              <Search className="w-16 h-16 text-slate-400 mx-auto mb-4" />
+              <CardTitle className="text-white mb-2">No Groups Found</CardTitle>
+              <p className="text-slate-300">
+                No groups match your search. Try a different search term.
+              </p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Modals */}
         <CreateGroupModal
-          isOpen={showCreateModal}
-          onClose={() => setShowCreateModal(false)}
-          onSuccess={handleGroupCreated}
+          open={showCreateModal}
+          onOpenChange={setShowCreateModal}
+          onSuccess={handleGroupSuccess}
         />
-      )}
 
-      {showJoinModal && (
         <JoinGroupModal
-          isOpen={showJoinModal}
-          onClose={() => setShowJoinModal(false)}
-          onSuccess={handleGroupJoined}
+          open={showJoinModal}
+          onOpenChange={setShowJoinModal}
+          onSuccess={handleGroupSuccess}
         />
-      )}
+      </div>
     </div>
   );
 };
