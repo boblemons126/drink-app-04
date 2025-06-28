@@ -26,7 +26,7 @@ const JoinGroupModal: React.FC<JoinGroupModalProps> = ({ open, onOpenChange, onS
 
     setLoading(true);
     try {
-      // First, check if the group exists
+      // First, find the group with this invite code
       const { data: group, error: groupError } = await supabase
         .from('groups')
         .select('id, name, emoji')
@@ -34,7 +34,13 @@ const JoinGroupModal: React.FC<JoinGroupModalProps> = ({ open, onOpenChange, onS
         .single();
 
       if (groupError || !group) {
-        throw new Error('Invalid invite code. Please check and try again.');
+        toast({
+          title: "Invalid Code",
+          description: "The invite code you entered is not valid. Please check and try again.",
+          variant: "destructive"
+        });
+        setLoading(false);
+        return;
       }
 
       // Check if user is already a member
@@ -46,24 +52,30 @@ const JoinGroupModal: React.FC<JoinGroupModalProps> = ({ open, onOpenChange, onS
         .single();
 
       if (existingMember) {
-        throw new Error('You are already a member of this group.');
+        toast({
+          title: "Already a Member",
+          description: `You're already a member of ${group.emoji} ${group.name}!`,
+          variant: "destructive"
+        });
+        setLoading(false);
+        return;
       }
 
       // Add user to the group
-      const { error: memberError } = await supabase
+      const { error: joinError } = await supabase
         .from('group_members')
-        .insert([{
+        .insert({
           group_id: group.id,
           user_id: user.id,
           role: 'member',
           status: 'active'
-        }]);
+        });
 
-      if (memberError) throw memberError;
+      if (joinError) throw joinError;
 
       toast({
-        title: "Joined Group!",
-        description: `Welcome to ${group.emoji} ${group.name}!`
+        title: "Welcome to the Group!",
+        description: `You've successfully joined ${group.emoji} ${group.name}.`
       });
 
       setInviteCode('');
@@ -96,7 +108,7 @@ const JoinGroupModal: React.FC<JoinGroupModalProps> = ({ open, onOpenChange, onS
               placeholder="Enter 8-character code"
               value={inviteCode}
               onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
-              className="bg-white/10 border-white/20 text-white placeholder-slate-400 font-mono text-center text-lg tracking-wider"
+              className="bg-white/10 border-white/20 text-white placeholder-slate-400 text-center text-lg font-mono"
               maxLength={8}
               required
             />
@@ -116,8 +128,8 @@ const JoinGroupModal: React.FC<JoinGroupModalProps> = ({ open, onOpenChange, onS
             </Button>
             <Button
               type="submit"
-              disabled={loading || inviteCode.length !== 8}
-              className="flex-1 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
+              disabled={loading || !inviteCode.trim() || inviteCode.length !== 8}
+              className="flex-1 bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700"
             >
               {loading ? "Joining..." : "Join Group"}
             </Button>
