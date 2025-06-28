@@ -136,7 +136,7 @@ const GroupsManager: React.FC = () => {
               <GroupCard
                 key={group.id}
                 group={group}
-                onUpdate={handleGroupSuccess}
+                onGroupUpdated={handleGroupSuccess}
               />
             ))}
           </div>

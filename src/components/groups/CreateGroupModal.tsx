@@ -33,7 +33,8 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onOpenChange,
         .insert({
           name: groupName.trim(),
           emoji: groupEmoji,
-          created_by: user.id
+          created_by: user.id,
+          invite_code: '' // This will be replaced by the database trigger
         });
 
       if (error) throw error;
