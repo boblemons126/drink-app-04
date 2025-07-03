@@ -1,93 +1,167 @@
-
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, ArrowLeft, Users, Calendar, Shield, Gamepad2, Camera, Wine } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Users, Wine, Gamepad2, Rocket, Sparkles } from 'lucide-react';
+import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 
 interface OnboardingFlowProps {
   onComplete: () => void;
 }
+
+const Feature = ({ icon: Icon, title, description }) => (
+  <motion.div
+    className="flex flex-col items-center text-center p-4"
+    variants={{
+      hidden: { opacity: 0, y: 20 },
+      visible: { opacity: 1, y: 0 }
+    }}
+    whileHover={{ scale: 1.05 }}
+    transition={{ type: 'spring', stiffness: 300 }}
+  >
+    <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-full p-4 mb-4 shadow-lg">
+      <Icon className="w-10 h-10 text-white" />
+    </div>
+    <h3 className="text-xl font-bold text-white mb-1">{title}</h3>
+    <p className="text-slate-300 max-w-xs">{description}</p>
+  </motion.div>
+);
+
+const ParallaxIcon = ({ children }) => {
+  const ref = useRef(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const xTransform = useTransform(x, [-150, 150], [-20, 20]);
+  const yTransform = useTransform(y, [-150, 150], [-20, 20]);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    x.set(e.clientX - rect.left - rect.width / 2);
+    y.set(e.clientY - rect.top - rect.height / 2);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <motion.div
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className="relative"
+      style={{ perspective: 1000 }}
+    >
+      <motion.div
+        style={{ x: xTransform, y: yTransform, rotateX: yTransform, rotateY: xTransform }}
+        className="transition-transform duration-200 ease-out"
+      >
+        {children}
+      </motion.div>
+    </motion.div>
+  );
+};
 
 const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
   const [currentStep, setCurrentStep] = useState(0);
 
   const steps = [
     {
-      title: "Welcome to DRNKUP",
-      subtitle: "Your ultimate night out companion",
+      key: "welcome",
       content: (
-        <div className="text-center space-y-6">
-          <div className="text-6xl font-bold bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-neon-pulse">
-            DRNKUP
-          </div>
-          <p className="text-lg text-slate-300 max-w-md mx-auto">
-            Plan epic nights out with your friends, track your adventures, and create unforgettable memories safely.
-          </p>
-          <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
-              <Users className="w-8 h-8 text-blue-400 mx-auto mb-2" />
-              <p className="text-sm text-white">Friend Groups</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
-              <Calendar className="w-8 h-8 text-green-400 mx-auto mb-2" />
-              <p className="text-sm text-white">Plan Sessions</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
-              <Wine className="w-8 h-8 text-purple-400 mx-auto mb-2" />
-              <p className="text-sm text-white">Track Drinks</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
-              <Shield className="w-8 h-8 text-orange-400 mx-auto mb-2" />
-              <p className="text-sm text-white">Stay Safe</p>
-            </div>
-          </div>
+        <div className="flex flex-col items-center text-center space-y-4">
+          <ParallaxIcon>
+            <motion.div 
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: 'spring', stiffness: 150, damping: 20, delay: 0.4 }}
+              className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-full p-6 shadow-lg"
+            >
+              <Sparkles className="w-16 h-16 text-white" />
+            </motion.div>
+          </ParallaxIcon>
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.2 }}
+            className="text-4xl md:text-5xl font-extrabold text-white"
+          >
+            Welcome to DRNKUP
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.7 }}
+            className="text-lg text-slate-300 max-w-md"
+          >
+            Your ultimate companion for unforgettable nights out. Let's get you set up.
+          </motion.p>
         </div>
       )
     },
     {
-      title: "Organize Your Crew",
-      subtitle: "Create groups and plan together",
+      key: "features",
       content: (
-        <div className="space-y-6">
-          <div className="bg-gradient-to-br from-blue-500/20 to-purple-600/20 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
-            <Users className="w-12 h-12 text-blue-400 mb-4" />
-            <h3 className="text-xl font-bold text-white mb-2">Friend Groups</h3>
-            <p className="text-slate-300">
-              Create permanent groups like "Weekend Crew" or "Work Buddies". Invite friends with unique codes and manage your circles easily.
-            </p>
-          </div>
-          <div className="bg-gradient-to-br from-green-500/20 to-blue-600/20 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
-            <Calendar className="w-12 h-12 text-green-400 mb-4" />
-            <h3 className="text-xl font-bold text-white mb-2">Plan Sessions</h3>
-            <p className="text-slate-300">
-              Create detailed night out plans, set budgets, arrange transport, and collaborate with your group in real-time.
-            </p>
-          </div>
+        <div className="flex flex-col items-center text-center space-y-8">
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-4xl md:text-5xl font-extrabold text-white"
+          >
+            What's Inside?
+          </motion.h1>
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            initial="hidden"
+            animate="visible"
+            variants={{
+              visible: {
+                transition: {
+                  staggerChildren: 0.2,
+                  delayChildren: 0.4
+                }
+              }
+            }}
+          >
+            <Feature icon={Users} title="Squad Up" description="Create groups, invite friends, and see who's ready to party." />
+            <Feature icon={Wine} title="Track the Vibe" description="Keep tabs on drinks and spending for the whole group, in real-time." />
+            <Feature icon={Gamepad2} title="Drinking Games" description="Break the ice with fun and interactive drinking games." />
+          </motion.div>
         </div>
       )
     },
     {
-      title: "Stay Safe & Have Fun",
-      subtitle: "Built-in safety features for worry-free nights",
+      key: "start",
       content: (
-        <div className="space-y-6">
-          <div className="bg-gradient-to-br from-orange-500/20 to-red-600/20 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
-            <Shield className="w-12 h-12 text-orange-400 mb-4" />
-            <h3 className="text-xl font-bold text-white mb-2">Safety First</h3>
-            <p className="text-slate-300">
-              Set emergency contacts, track eating habits, plan transport home, and keep your group informed about your status.
-            </p>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center border border-white/10">
-              <Camera className="w-8 h-8 text-pink-400 mx-auto mb-2" />
-              <p className="text-sm text-white">Capture Memories</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center border border-white/10">
-              <Gamepad2 className="w-8 h-8 text-cyan-400 mx-auto mb-2" />
-              <p className="text-sm text-white">Party Games</p>
-            </div>
-          </div>
+        <div className="flex flex-col items-center text-center space-y-4">
+          <ParallaxIcon>
+            <motion.div
+              initial={{ scale: 0, y: 50 }}
+              animate={{ scale: 1, y: 0 }}
+              transition={{ type: 'spring', stiffness: 150, damping: 20, delay: 0.2 }}
+              className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-full p-6 shadow-lg"
+            >
+              <Rocket className="w-16 h-16 text-white" />
+            </motion.div>
+          </ParallaxIcon>
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="text-4xl md:text-5xl font-extrabold text-white"
+          >
+            You're All Set!
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="text-lg text-slate-300 max-w-md"
+          >
+            Ready to dive in and plan your first epic night?
+          </motion.p>
         </div>
       )
     }
@@ -107,63 +181,62 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
     }
   };
 
+  const stepVariants = {
+    initial: { opacity: 0, scale: 0.95 },
+    enter: { opacity: 1, scale: 1 },
+    exit: { opacity: 0, scale: 0.95 }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-lg">
-        <Card className="bg-black/40 backdrop-blur-xl border-white/20">
-          <CardContent className="p-8">
-            {/* Progress indicator */}
-            <div className="flex justify-center mb-8">
-              <div className="flex space-x-2">
-                {steps.map((_, index) => (
-                  <div
-                    key={index}
-                    className={`w-3 h-3 rounded-full transition-colors ${
-                      index <= currentStep ? 'bg-cyan-400' : 'bg-white/20'
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
+    <div className="min-h-screen aurora-bg flex flex-col items-center justify-center p-4 overflow-hidden">
+      <div className="flex-grow flex items-center justify-center w-full">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentStep}
+            variants={stepVariants}
+            initial="initial"
+            animate="enter"
+            exit="exit"
+            transition={{ duration: 0.5, type: 'tween' }}
+            className="w-full max-w-4xl"
+          >
+            {steps[currentStep].content}
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
-            {/* Step content */}
-            <div className="text-center space-y-6 min-h-[400px]">
-              <div>
-                <h1 className="text-2xl font-bold text-white mb-2">
-                  {steps[currentStep].title}
-                </h1>
-                <p className="text-slate-400">
-                  {steps[currentStep].subtitle}
-                </p>
-              </div>
-              
-              <div className="py-4">
-                {steps[currentStep].content}
-              </div>
-            </div>
+      <div className="w-full max-w-4xl py-8">
+        <div className="flex justify-between items-center">
+          <Button
+            variant="ghost"
+            onClick={prevStep}
+            className="text-slate-300 bg-white/10 hover:bg-white/20 backdrop-blur-sm border-white/20 rounded-lg disabled:opacity-30"
+            disabled={currentStep === 0}
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back
+          </Button>
 
-            {/* Navigation */}
-            <div className="flex justify-between items-center mt-8">
-              <Button
-                variant="ghost"
-                onClick={prevStep}
-                disabled={currentStep === 0}
-                className="text-white hover:bg-white/10 disabled:opacity-30"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back
-              </Button>
+          <div className="flex space-x-2">
+            {steps.map((_, index) => (
+              <motion.div
+                key={index}
+                onClick={() => setCurrentStep(index)}
+                className="w-3 h-3 rounded-full cursor-pointer"
+                animate={index === currentStep ? { scale: 1.5, backgroundColor: '#FFFFFF' } : { scale: 1, backgroundColor: 'rgba(255, 255, 255, 0.3)' }}
+                transition={{ type: 'spring', stiffness: 300 }}
+              />
+            ))}
+          </div>
 
-              <Button
-                onClick={nextStep}
-                className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 text-white px-6"
-              >
-                {currentStep === steps.length - 1 ? 'Get Started' : 'Next'}
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+          <Button
+            onClick={nextStep}
+            className="bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 shadow-lg"
+          >
+            {currentStep === steps.length - 1 ? 'Get Started' : 'Next'}
+            <ArrowRight className="w-4 h-4 ml-2" />
+          </Button>
+        </div>
       </div>
     </div>
   );
