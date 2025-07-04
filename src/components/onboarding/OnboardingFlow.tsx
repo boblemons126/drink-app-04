@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ArrowLeft, Users, Wine, Gamepad2, Rocket, Sparkles } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Users, Wine, Gamepad2, Rocket, PartyPopper } from 'lucide-react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 
 interface OnboardingFlowProps {
@@ -65,6 +65,12 @@ const ParallaxIcon = ({ children }) => {
 
 const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
   const [currentStep, setCurrentStep] = useState(0);
+  const [direction, setDirection] = useState(0);
+  const [isExiting, setIsExiting] = useState(false);
+
+  const handleComplete = () => {
+    setIsExiting(true);
+  };
 
   const steps = [
     {
@@ -78,7 +84,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
               transition={{ type: 'spring', stiffness: 150, damping: 20, delay: 0.4 }}
               className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-full p-6 shadow-lg"
             >
-              <Sparkles className="w-16 h-16 text-white" />
+              <PartyPopper className="w-16 h-16 text-white" />
             </motion.div>
           </ParallaxIcon>
           <motion.h1 
@@ -162,12 +168,25 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
           >
             Ready to dive in and plan your first epic night?
           </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+          >
+            <Button
+              onClick={handleComplete}
+              className="mt-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 shadow-lg px-8 py-3 text-lg"
+            >
+              Sign Up Now
+            </Button>
+          </motion.div>
         </div>
       )
     }
   ];
 
   const nextStep = () => {
+    setDirection(1);
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
@@ -176,29 +195,60 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
   };
 
   const prevStep = () => {
+    setDirection(-1);
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
   };
 
   const stepVariants = {
-    initial: { opacity: 0, scale: 0.95 },
-    enter: { opacity: 1, scale: 1 },
-    exit: { opacity: 0, scale: 0.95 }
+    enter: (direction: number) => ({
+      x: direction > 0 ? '100%' : '-100%',
+      opacity: 0,
+    }),
+    center: {
+      x: '0%',
+      opacity: 1,
+    },
+    exit: (direction: number) => ({
+      x: direction < 0 ? '100%' : '-100%',
+      opacity: 0,
+    }),
   };
 
   return (
-    <div className="min-h-screen aurora-bg flex flex-col items-center justify-center p-4 overflow-hidden">
-      <div className="flex-grow flex items-center justify-center w-full">
-        <AnimatePresence mode="wait">
+    <motion.div
+      className="min-h-screen aurora-bg flex flex-col items-center justify-center p-4 overflow-hidden"
+      initial={{ opacity: 1 }}
+      animate={{ opacity: isExiting ? 0 : 1 }}
+      transition={{ duration: 0.5 }}
+      onAnimationComplete={() => {
+        if (isExiting) {
+          onComplete();
+        }
+      }}
+    >
+      <div className="flex-grow flex items-center justify-center w-full relative">
+        <AnimatePresence custom={direction}>
           <motion.div
             key={currentStep}
+            custom={direction}
             variants={stepVariants}
-            initial="initial"
-            animate="enter"
+            initial="enter"
+            animate="center"
             exit="exit"
-            transition={{ duration: 0.5, type: 'tween' }}
-            className="w-full max-w-4xl"
+            transition={{ type: 'spring', stiffness: 400, damping: 40 }}
+            className="w-full max-w-4xl absolute"
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.2}
+            onDragEnd={(_, { offset }) => {
+              if (offset.x < -100) {
+                nextStep();
+              } else if (offset.x > 100) {
+                prevStep();
+              }
+            }}
           >
             {steps[currentStep].content}
           </motion.div>
@@ -206,39 +256,24 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
       </div>
 
       <div className="w-full max-w-4xl py-8">
-        <div className="flex justify-between items-center">
-          <Button
-            variant="ghost"
-            onClick={prevStep}
-            className="text-slate-300 bg-white/10 hover:bg-white/20 backdrop-blur-sm border-white/20 rounded-lg disabled:opacity-30"
-            disabled={currentStep === 0}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
-
+        <div className="flex justify-center items-center">
           <div className="flex space-x-2">
             {steps.map((_, index) => (
               <motion.div
                 key={index}
-                onClick={() => setCurrentStep(index)}
+                onClick={() => {
+                  setDirection(index > currentStep ? 1 : -1);
+                  setCurrentStep(index);
+                }}
                 className="w-3 h-3 rounded-full cursor-pointer"
                 animate={index === currentStep ? { scale: 1.5, backgroundColor: '#FFFFFF' } : { scale: 1, backgroundColor: 'rgba(255, 255, 255, 0.3)' }}
                 transition={{ type: 'spring', stiffness: 300 }}
               />
             ))}
           </div>
-
-          <Button
-            onClick={nextStep}
-            className="bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 shadow-lg"
-          >
-            {currentStep === steps.length - 1 ? 'Get Started' : 'Next'}
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

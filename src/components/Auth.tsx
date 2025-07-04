@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import OnboardingFlow from './onboarding/OnboardingFlow';
-import SSOAuth from './auth/SSOAuth';
+import AuthScreen from './auth/AuthScreen';
 
 interface AuthProps {
   onOnboardingComplete: () => void;
@@ -27,7 +26,7 @@ const Auth: React.FC<AuthProps> = ({ onOnboardingComplete, skipOnboarding = fals
 
   if (showAuth) {
     return (
-      <SSOAuth 
+      <AuthScreen 
         onBack={handleBackToOnboarding} 
         onComplete={handleAuthComplete}
         showBackButton={!skipOnboarding}

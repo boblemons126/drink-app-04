@@ -8,67 +8,37 @@ const AuthCallback: React.FC = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const handleAuthCallback = async () => {
-      try {
-        const { data, error } = await supabase.auth.getSession();
-        
-        if (error) throw error;
-
-        if (data.session) {
-          // Check if user profile exists
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', data.session.user.id)
-            .single();
-
-          if (!profile) {
-            // Create profile for new OAuth users
-            const { error: profileError } = await supabase
-              .from('profiles')
-              .upsert([{
-                id: data.session.user.id,
-                username: data.session.user.email?.split('@')[0] || `user${Math.floor(Math.random() * 1000)}`,
-                full_name: data.session.user.user_metadata?.full_name || data.session.user.user_metadata?.name || 'Anonymous',
-                email: data.session.user.email
-              }]);
-
-            if (profileError) {
-              console.error('Profile creation error:', profileError);
-            }
-          }
-
-          toast({
-            title: "Welcome to DRNKUP!",
-            description: "You've been signed in successfully."
-          });
-
-          navigate('/');
-        } else {
-          navigate('/auth');
-        }
-      } catch (error: any) {
-        console.error('Auth callback error:', error);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
         toast({
-          title: "Authentication Error",
-          description: "Failed to complete sign-in. Please try again.",
-          variant: "destructive"
+          title: 'Successfully Signed In',
+          description: 'Welcome back!',
         });
-        navigate('/auth');
+        navigate('/'); // Redirect to home page or dashboard
+      } else if (event === 'SIGNED_OUT') {
+        navigate('/auth'); // Redirect to login page on sign out
       }
-    };
+    });
 
-    handleAuthCallback();
+    // Check for session on initial load
+    const checkSession = async () => {
+        const { data } = await supabase.auth.getSession();
+        if (data.session) {
+            navigate('/');
+        }
+    }
+    checkSession();
+    
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [navigate, toast]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-      <div className="text-center">
-        <div className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent mb-4">
-          DRNKUP
-        </div>
-        <div className="text-white">Completing sign-in...</div>
-      </div>
+    <div className="min-h-screen aurora-bg flex flex-col items-center justify-center text-white">
+      <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-white"></div>
+      <p className="mt-4 text-lg">Finalizing your authentication...</p>
+      <p className="text-sm text-slate-300">Please wait a moment.</p>
     </div>
   );
 };
