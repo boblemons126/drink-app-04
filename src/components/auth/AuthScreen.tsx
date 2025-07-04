@@ -79,7 +79,7 @@ const AuthScreen = ({ onBack, onComplete, showBackButton }) => {
         <Button 
           onClick={() => handleOAuthSignIn('google')} 
           disabled={loading} 
-          className="w-full mobile-glass-button h-16 rounded-2xl font-semibold text-lg flex items-center justify-center space-x-3"
+          className="w-full app-primary-button h-16 rounded-2xl font-semibold text-lg flex items-center justify-center space-x-3"
         >
           <Chrome className="w-6 h-6" /> 
           <span>Continue with Google</span>
@@ -104,7 +104,7 @@ const AuthScreen = ({ onBack, onComplete, showBackButton }) => {
         <Button 
           onClick={() => setStep('phoneInput')} 
           disabled={loading} 
-          className="w-full mobile-glass-button-outline h-16 rounded-2xl font-semibold text-lg flex items-center justify-center space-x-3"
+          className="w-full app-secondary-button h-16 rounded-2xl font-semibold text-lg flex items-center justify-center space-x-3"
         >
           <Smartphone className="w-6 h-6" /> 
           <span>Continue with Phone</span>
@@ -135,7 +135,7 @@ const AuthScreen = ({ onBack, onComplete, showBackButton }) => {
       <Button 
         onClick={handlePhoneSignIn} 
         disabled={loading || !phoneNumber} 
-        className="w-full mobile-glass-button h-16 rounded-2xl font-semibold text-lg"
+        className="w-full app-accent-button h-16 rounded-2xl font-semibold text-lg"
       >
         {loading ? "Sending..." : "Send Code"}
       </Button>
@@ -167,7 +167,7 @@ const AuthScreen = ({ onBack, onComplete, showBackButton }) => {
       <Button 
         onClick={handleVerifyOtp} 
         disabled={loading || otp.length < 6} 
-        className="w-full mobile-glass-button h-16 rounded-2xl font-semibold text-lg"
+        className="w-full app-success-button h-16 rounded-2xl font-semibold text-lg"
       >
         {loading ? "Verifying..." : "Verify Code"}
       </Button>
@@ -222,7 +222,7 @@ const AuthScreen = ({ onBack, onComplete, showBackButton }) => {
               transition={{ delay: 0.3, type: 'spring', stiffness: 200, damping: 15 }}
             >
               <div className="p-4 mobile-glass-icon rounded-full">
-                <PartyPopper className="w-10 h-10 text-white" />
+                <PartyPopper className="w-10 h-10 text-purple-300" />
               </div>
             </motion.div>
             

@@ -59,6 +59,146 @@
 }
 
 @layer components {
+  /* App-Themed Button Styles */
+  .app-primary-button {
+    background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 50%, #06B6D4 100%);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: white;
+    font-weight: 600;
+    box-shadow: 
+      0 16px 40px rgba(139, 92, 246, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .app-primary-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s ease;
+  }
+
+  .app-primary-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+      0 20px 48px rgba(139, 92, 246, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  .app-primary-button:hover::before {
+    left: 100%;
+  }
+
+  .app-secondary-button {
+    background: rgba(139, 92, 246, 0.15);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    color: white;
+    font-weight: 600;
+    box-shadow: 
+      0 12px 32px rgba(139, 92, 246, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .app-secondary-button:hover {
+    background: rgba(139, 92, 246, 0.25);
+    border-color: rgba(139, 92, 246, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 
+      0 16px 40px rgba(139, 92, 246, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  }
+
+  .app-accent-button {
+    background: linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: white;
+    font-weight: 600;
+    box-shadow: 
+      0 16px 40px rgba(6, 182, 212, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .app-accent-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+      0 20px 48px rgba(6, 182, 212, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  .app-success-button {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: white;
+    font-weight: 600;
+    box-shadow: 
+      0 16px 40px rgba(16, 185, 129, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .app-success-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+      0 20px 48px rgba(16, 185, 129, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  /* Disabled states for all app buttons */
+  .app-primary-button:disabled,
+  .app-secondary-button:disabled,
+  .app-accent-button:disabled,
+  .app-success-button:disabled {
+    opacity: 0.6;
+    transform: none;
+    cursor: not-allowed;
+    box-shadow: 
+      0 8px 16px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  /* Active states for mobile */
+  .app-primary-button:active,
+  .app-secondary-button:active,
+  .app-accent-button:active,
+  .app-success-button:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+
   /* Mobile-Optimized Liquid Glass Components */
   .mobile-glass-card {
     background: rgba(255, 255, 255, 0.08);
@@ -89,81 +229,6 @@
     left: 100%;
   }
 
-  .mobile-glass-button {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(30px);
-    -webkit-backdrop-filter: blur(30px);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    color: white;
-    font-weight: 600;
-    box-shadow: 
-      0 16px 40px rgba(0, 0, 0, 0.12),
-      inset 0 1px 0 rgba(255, 255, 255, 0.4),
-      inset 0 -1px 0 rgba(255, 255, 255, 0.1);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .mobile-glass-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
-    transition: left 0.6s ease;
-  }
-
-  .mobile-glass-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 
-      0 20px 48px rgba(0, 0, 0, 0.18),
-      inset 0 1px 0 rgba(255, 255, 255, 0.5),
-      inset 0 -1px 0 rgba(255, 255, 255, 0.2);
-  }
-
-  .mobile-glass-button:hover::before {
-    left: 100%;
-  }
-
-  .mobile-glass-button:active {
-    transform: translateY(0);
-    transition: transform 0.1s ease;
-  }
-
-  .mobile-glass-button:disabled {
-    opacity: 0.6;
-    transform: none;
-    cursor: not-allowed;
-  }
-
-  .mobile-glass-button-outline {
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(30px);
-    -webkit-backdrop-filter: blur(30px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    font-weight: 600;
-    box-shadow: 
-      0 12px 32px rgba(0, 0, 0, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.25);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .mobile-glass-button-outline:hover {
-    background: rgba(255, 255, 255, 0.15);
-    transform: translateY(-2px);
-    box-shadow: 
-      0 16px 40px rgba(0, 0, 0, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.35);
-  }
-
   .mobile-glass-input {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(25px);
@@ -186,22 +251,22 @@
 
   .mobile-glass-input:focus {
     background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(139, 92, 246, 0.5);
     box-shadow: 
       inset 0 2px 8px rgba(0, 0, 0, 0.1),
-      0 0 0 3px rgba(255, 255, 255, 0.1),
+      0 0 0 3px rgba(139, 92, 246, 0.2),
       0 1px 0 rgba(255, 255, 255, 0.35);
     outline: none;
     transform: translateY(-1px);
   }
 
   .mobile-glass-icon {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(139, 92, 246, 0.2);
     backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(25px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(139, 92, 246, 0.3);
     box-shadow: 
-      0 12px 32px rgba(0, 0, 0, 0.1),
+      0 12px 32px rgba(139, 92, 246, 0.15),
       inset 0 1px 0 rgba(255, 255, 255, 0.3);
   }
 
@@ -438,8 +503,10 @@
     padding: 2rem 1.5rem;
   }
   
-  .mobile-glass-button,
-  .mobile-glass-button-outline {
+  .app-primary-button,
+  .app-secondary-button,
+  .app-accent-button,
+  .app-success-button {
     min-height: 4rem;
     font-size: 1rem;
     padding: 0 1.5rem;
@@ -452,20 +519,24 @@
   }
   
   /* Improve touch targets */
-  .mobile-glass-button:active,
-  .mobile-glass-button-outline:active {
+  .app-primary-button:active,
+  .app-secondary-button:active,
+  .app-accent-button:active,
+  .app-success-button:active {
     transform: scale(0.98);
   }
   
   /* Reduce motion for users who prefer it */
   @media (prefers-reduced-motion: reduce) {
     .mobile-glass-card::before,
-    .mobile-glass-button::before {
+    .app-primary-button::before {
       display: none;
     }
     
-    .mobile-glass-button:hover,
-    .mobile-glass-button-outline:hover {
+    .app-primary-button:hover,
+    .app-secondary-button:hover,
+    .app-accent-button:hover,
+    .app-success-button:hover {
       transform: none;
     }
   }
@@ -474,8 +545,10 @@
 /* High contrast mode support */
 @media (prefers-contrast: high) {
   .mobile-glass-card,
-  .mobile-glass-button,
-  .mobile-glass-button-outline,
+  .app-primary-button,
+  .app-secondary-button,
+  .app-accent-button,
+  .app-success-button,
   .mobile-glass-input {
     border-width: 2px;
     border-color: rgba(255, 255, 255, 0.8);
