@@ -68,20 +68,44 @@ const AuthScreen = ({ onBack, onComplete, showBackButton }) => {
       initial="hidden"
       animate="visible"
       exit={{ opacity: 0 }}
-      className="space-y-4"
+      className="space-y-6"
     >
-      <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} whileHover={{ scale: 1.02 }} transition={{ type: 'spring', stiffness: 400, damping: 10 }}>
-        <Button onClick={() => handleOAuthSignIn('google')} disabled={loading} className="w-full bg-white text-gray-900 hover:bg-gray-200 h-12 rounded-lg font-semibold shadow-md flex items-center justify-center">
-          <Chrome className="w-5 h-5 mr-3" /> <span>Continue with Google</span>
+      <motion.div 
+        variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} 
+        whileHover={{ scale: 1.02 }} 
+        transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+      >
+        <Button 
+          onClick={() => handleOAuthSignIn('google')} 
+          disabled={loading} 
+          className="w-full glass-button h-14 rounded-2xl font-semibold text-lg flex items-center justify-center space-x-3 border border-white/20"
+        >
+          <Chrome className="w-6 h-6" /> 
+          <span>Continue with Google</span>
         </Button>
       </motion.div>
-      <div className="relative my-4">
-        <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-slate-700" /></div>
-        <div className="relative flex justify-center text-xs uppercase"><span className="bg-slate-900/90 px-2 text-slate-400">Or</span></div>
+      
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t border-white/30" />
+        </div>
+        <div className="relative flex justify-center text-sm uppercase">
+          <span className="bg-transparent px-4 text-white/70 font-medium">Or</span>
+        </div>
       </div>
-      <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} whileHover={{ scale: 1.02 }} transition={{ type: 'spring', stiffness: 400, damping: 10 }}>
-        <Button onClick={() => setStep('phoneInput')} disabled={loading} variant="secondary" className="w-full bg-slate-800/50 hover:bg-slate-700/60 border border-slate-700 text-white h-12 rounded-lg font-semibold shadow-md flex items-center justify-center">
-          <Smartphone className="w-5 h-5 mr-3" /> <span>Continue with Phone</span>
+      
+      <motion.div 
+        variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} 
+        whileHover={{ scale: 1.02 }} 
+        transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+      >
+        <Button 
+          onClick={() => setStep('phoneInput')} 
+          disabled={loading} 
+          className="w-full glass-button-outline h-14 rounded-2xl font-semibold text-lg flex items-center justify-center space-x-3"
+        >
+          <Smartphone className="w-6 h-6" /> 
+          <span>Continue with Phone</span>
         </Button>
       </motion.div>
     </motion.div>
@@ -93,17 +117,21 @@ const AuthScreen = ({ onBack, onComplete, showBackButton }) => {
       initial={{ opacity: 0, x: 100 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -100 }}
-      className="space-y-4"
+      className="space-y-6"
     >
-      <h3 className="text-white text-lg font-semibold text-center">Enter Your Phone Number</h3>
+      <h3 className="text-white text-xl font-semibold text-center">Enter Your Phone Number</h3>
       <Input
         type="tel"
         placeholder="+1 (555) 123-4567"
         value={phoneNumber}
         onChange={(e) => setPhoneNumber(e.target.value)}
-        className="bg-white/10 border-white/20 text-white placeholder:text-slate-400 h-12"
+        className="glass-input h-14 text-lg rounded-2xl border border-white/20"
       />
-      <Button onClick={handlePhoneSignIn} disabled={loading || !phoneNumber} className="w-full bg-green-500 hover:bg-green-600 h-12">
+      <Button 
+        onClick={handlePhoneSignIn} 
+        disabled={loading || !phoneNumber} 
+        className="w-full glass-button h-14 rounded-2xl font-semibold text-lg"
+      >
         Send Code
       </Button>
     </motion.div>
@@ -115,21 +143,25 @@ const AuthScreen = ({ onBack, onComplete, showBackButton }) => {
       initial={{ opacity: 0, x: 100 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -100 }}
-      className="space-y-4 flex flex-col items-center"
+      className="space-y-6 flex flex-col items-center"
     >
-      <h3 className="text-white text-lg font-semibold text-center">Enter Verification Code</h3>
-      <p className="text-slate-300 text-sm text-center">Sent to {phoneNumber}</p>
+      <h3 className="text-white text-xl font-semibold text-center">Enter Verification Code</h3>
+      <p className="text-white/70 text-base text-center">Sent to {phoneNumber}</p>
       <InputOTP maxLength={6} value={otp} onChange={setOtp}>
-          <InputOTPGroup>
-              <InputOTPSlot index={0} />
-              <InputOTPSlot index={1} />
-              <InputOTPSlot index={2} />
-              <InputOTPSlot index={3} />
-              <InputOTPSlot index={4} />
-              <InputOTPSlot index={5} />
-          </InputOTPGroup>
+        <InputOTPGroup className="gap-3">
+          <InputOTPSlot index={0} className="glass-input w-14 h-14 text-xl rounded-xl border border-white/20" />
+          <InputOTPSlot index={1} className="glass-input w-14 h-14 text-xl rounded-xl border border-white/20" />
+          <InputOTPSlot index={2} className="glass-input w-14 h-14 text-xl rounded-xl border border-white/20" />
+          <InputOTPSlot index={3} className="glass-input w-14 h-14 text-xl rounded-xl border border-white/20" />
+          <InputOTPSlot index={4} className="glass-input w-14 h-14 text-xl rounded-xl border border-white/20" />
+          <InputOTPSlot index={5} className="glass-input w-14 h-14 text-xl rounded-xl border border-white/20" />
+        </InputOTPGroup>
       </InputOTP>
-      <Button onClick={handleVerifyOtp} disabled={loading || otp.length < 6} className="w-full bg-blue-500 hover:bg-blue-600 h-12 mt-4">
+      <Button 
+        onClick={handleVerifyOtp} 
+        disabled={loading || otp.length < 6} 
+        className="w-full glass-button h-14 rounded-2xl font-semibold text-lg mt-6"
+      >
         Verify
       </Button>
     </motion.div>
@@ -144,39 +176,66 @@ const AuthScreen = ({ onBack, onComplete, showBackButton }) => {
   const showInternalBackButton = step === 'phoneInput' || step === 'otpInput';
 
   return (
-    <div className="min-h-screen aurora-bg flex items-center justify-center p-4">
+    <div className="min-h-screen sunset-bg flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-orange-400/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-pink-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-yellow-400/20 rounded-full blur-3xl animate-pulse delay-500"></div>
+      </div>
+
       <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
+        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="w-full max-w-md relative z-10"
       >
-        <div className="bg-slate-900/80 backdrop-blur-2xl border border-slate-700/50 shadow-2xl rounded-2xl p-8">
-          <div className="relative text-center mb-6">
+        <div className="glass-card rounded-3xl p-8 border border-white/20 backdrop-blur-xl">
+          <div className="relative text-center mb-8">
             {(showBackButton || showInternalBackButton) && (
               <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                <Button onClick={handleBack} variant="ghost" className="absolute left-0 top-1/2 -translate-y-1/2 text-white hover:bg-white/10 p-2 rounded-full">
-                  <ArrowLeft className="w-5 h-5" />
+                <Button 
+                  onClick={handleBack} 
+                  variant="ghost" 
+                  className="absolute left-0 top-1/2 -translate-y-1/2 text-white hover:bg-white/10 p-3 rounded-full"
+                >
+                  <ArrowLeft className="w-6 h-6" />
                 </Button>
               </motion.div>
             )}
-             <motion.div 
-              className="flex justify-center mb-4"
+            
+            <motion.div 
+              className="flex justify-center mb-6"
               initial={{ scale: 0, rotate: -90 }}
               animate={{ scale: 1, rotate: 0 }}
-              transition={{ delay: 0.1, type: 'spring', stiffness: 200, damping: 10 }}
+              transition={{ delay: 0.2, type: 'spring', stiffness: 200, damping: 10 }}
             >
-              <div className="p-3 bg-slate-800/70 border border-slate-700 rounded-full">
-                <PartyPopper className="w-8 h-8 text-purple-400" />
+              <div className="p-4 glass-icon rounded-full border border-white/20">
+                <PartyPopper className="w-10 h-10 text-white" />
               </div>
             </motion.div>
-            <h2 className="text-3xl font-extrabold text-white">
-              {step === 'select' ? 'Join the Party' : 'Phone Sign-In'}
-            </h2>
-            <p className="text-slate-400 mt-1">
-              {step === 'select' ? "Let's get you signed in." : 'Secure and simple.'}
-            </p>
+            
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-3xl font-extrabold text-white mb-2"
+            >
+              Welcome to DRNKUP
+            </motion.h1>
+            
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="text-white/80 text-base"
+            >
+              {step === 'select' ? "Your ultimate party companion awaits" : 
+               step === 'phoneInput' ? 'Secure and simple sign-in' : 
+               'Almost there!'}
+            </motion.p>
           </div>
+          
           <AnimatePresence mode="wait">
             {step === 'select' && renderSelect()}
             {step === 'phoneInput' && renderPhoneInput()}
@@ -188,4 +247,4 @@ const AuthScreen = ({ onBack, onComplete, showBackButton }) => {
   );
 };
 
-export default AuthScreen; 
+export default AuthScreen;
