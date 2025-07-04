@@ -59,167 +59,150 @@
 }
 
 @layer components {
-  /* Sunset Background */
-  .sunset-bg {
-    background: linear-gradient(135deg, 
-      #ff6b6b 0%,     /* Coral red */
-      #ff8e53 15%,    /* Orange */
-      #ff6b9d 30%,    /* Pink */
-      #c44569 45%,    /* Deep pink */
-      #f8b500 60%,    /* Golden yellow */
-      #ff7675 75%,    /* Light coral */
-      #fd79a8 90%,    /* Rose pink */
-      #fdcb6e 100%    /* Warm yellow */
-    );
-    background-size: 400% 400%;
-    animation: sunset-animation 20s ease infinite;
-    position: relative;
-  }
-
-  .sunset-bg::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 30% 20%, rgba(255, 107, 107, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 70% 80%, rgba(253, 203, 110, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 50% 50%, rgba(255, 107, 157, 0.2) 0%, transparent 70%);
-    pointer-events: none;
-  }
-
-  @keyframes sunset-animation {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-
-  /* Enhanced Liquid Glass Effects */
-  .glass-card {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+  /* Mobile-Optimized Liquid Glass Components */
+  .mobile-glass-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     box-shadow: 
-      0 25px 45px rgba(0, 0, 0, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.4),
+      0 32px 64px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3),
       inset 0 -1px 0 rgba(255, 255, 255, 0.1),
       0 0 0 1px rgba(255, 255, 255, 0.05);
     position: relative;
     overflow: hidden;
   }
 
-  .glass-card::before {
+  .mobile-glass-card::before {
     content: '';
     position: absolute;
     top: 0;
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-    transition: left 0.5s;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+    transition: left 0.8s ease;
   }
 
-  .glass-card:hover::before {
+  .mobile-glass-card:hover::before {
     left: 100%;
   }
 
-  .glass-button {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+  .mobile-glass-button {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
     color: white;
+    font-weight: 600;
     box-shadow: 
-      0 8px 32px rgba(0, 0, 0, 0.1),
+      0 16px 40px rgba(0, 0, 0, 0.12),
       inset 0 1px 0 rgba(255, 255, 255, 0.4),
       inset 0 -1px 0 rgba(255, 255, 255, 0.1);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .glass-button::before {
+  .mobile-glass-button::before {
     content: '';
     position: absolute;
     top: 0;
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+    transition: left 0.6s ease;
   }
 
-  .glass-button:hover {
+  .mobile-glass-button:hover {
     transform: translateY(-2px);
     box-shadow: 
-      0 12px 40px rgba(0, 0, 0, 0.15),
+      0 20px 48px rgba(0, 0, 0, 0.18),
       inset 0 1px 0 rgba(255, 255, 255, 0.5),
       inset 0 -1px 0 rgba(255, 255, 255, 0.2);
   }
 
-  .glass-button:hover::before {
+  .mobile-glass-button:hover::before {
     left: 100%;
   }
 
-  .glass-button:active {
+  .mobile-glass-button:active {
     transform: translateY(0);
+    transition: transform 0.1s ease;
   }
 
-  .glass-button-outline {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+  .mobile-glass-button:disabled {
+    opacity: 0.6;
+    transform: none;
+    cursor: not-allowed;
+  }
+
+  .mobile-glass-button-outline {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
+    font-weight: 600;
     box-shadow: 
-      0 4px 16px rgba(0, 0, 0, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      0 12px 32px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.25);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .glass-button-outline:hover {
-    background: rgba(255, 255, 255, 0.2);
+  .mobile-glass-button-outline:hover {
+    background: rgba(255, 255, 255, 0.15);
     transform: translateY(-2px);
     box-shadow: 
-      0 8px 24px rgba(0, 0, 0, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      0 16px 40px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.35);
   }
 
-  .glass-input {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+  .mobile-glass-input {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
+    font-weight: 500;
     box-shadow: 
-      inset 0 2px 4px rgba(0, 0, 0, 0.1),
-      0 1px 0 rgba(255, 255, 255, 0.3);
+      inset 0 2px 8px rgba(0, 0, 0, 0.1),
+      0 1px 0 rgba(255, 255, 255, 0.25);
     transition: all 0.3s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .glass-input::placeholder {
+  .mobile-glass-input::placeholder {
     color: rgba(255, 255, 255, 0.6);
+    font-weight: 400;
   }
 
-  .glass-input:focus {
-    background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 
-      inset 0 2px 4px rgba(0, 0, 0, 0.1),
-      0 0 0 3px rgba(255, 255, 255, 0.1),
-      0 1px 0 rgba(255, 255, 255, 0.4);
-    outline: none;
-  }
-
-  .glass-icon {
+  .mobile-glass-input:focus {
     background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
     box-shadow: 
-      0 8px 32px rgba(0, 0, 0, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      inset 0 2px 8px rgba(0, 0, 0, 0.1),
+      0 0 0 3px rgba(255, 255, 255, 0.1),
+      0 1px 0 rgba(255, 255, 255, 0.35);
+    outline: none;
+    transform: translateY(-1px);
+  }
+
+  .mobile-glass-icon {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 
+      0 12px 32px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
   }
 
   /* Original liquid glass styles for other components */
@@ -446,6 +429,57 @@
   background: linear-gradient(-45deg, #151330, #361469, #911247, #1d50bd);
   background-size: 400% 400%;
   animation: aurora-animation 15s ease infinite;
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 768px) {
+  .mobile-glass-card {
+    margin: 1rem;
+    padding: 2rem 1.5rem;
+  }
+  
+  .mobile-glass-button,
+  .mobile-glass-button-outline {
+    min-height: 4rem;
+    font-size: 1rem;
+    padding: 0 1.5rem;
+  }
+  
+  .mobile-glass-input {
+    min-height: 4rem;
+    font-size: 1rem;
+    padding: 0 1rem;
+  }
+  
+  /* Improve touch targets */
+  .mobile-glass-button:active,
+  .mobile-glass-button-outline:active {
+    transform: scale(0.98);
+  }
+  
+  /* Reduce motion for users who prefer it */
+  @media (prefers-reduced-motion: reduce) {
+    .mobile-glass-card::before,
+    .mobile-glass-button::before {
+      display: none;
+    }
+    
+    .mobile-glass-button:hover,
+    .mobile-glass-button-outline:hover {
+      transform: none;
+    }
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .mobile-glass-card,
+  .mobile-glass-button,
+  .mobile-glass-button-outline,
+  .mobile-glass-input {
+    border-width: 2px;
+    border-color: rgba(255, 255, 255, 0.8);
+  }
 }
 
 /* End of added animations */
