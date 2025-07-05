@@ -1,12 +1,22 @@
+<<<<<<< Updated upstream
 import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ArrowLeft, Users, Wine, Gamepad2, Rocket, PartyPopper, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
+=======
+import React, { useState } from 'react';
+import { Users, Wine, Gamepad2, PartyPopper } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ParallaxIcon } from './ParallaxIcon';
+import OnboardingSignupCard from './OnboardingSignupCard';
+import LiquidGlassCard from '../ui/LiquidGlassCard';
+>>>>>>> Stashed changes
 
 interface OnboardingFlowProps {
   onComplete: () => void;
 }
 
+<<<<<<< Updated upstream
 const Feature = ({ icon: Icon, title, description }) => (
   <motion.div
     className="flex flex-col items-center text-center p-4"
@@ -63,9 +73,29 @@ const ParallaxIcon = ({ children }) => {
   );
 };
 
+=======
+>>>>>>> Stashed changes
 const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState(0);
+
+  const features = [
+    {
+      icon: Users,
+      title: "Squad Up",
+      description: "Create groups, invite friends, and see who's ready to party."
+    },
+    {
+      icon: Wine,
+      title: "Track the Vibe",
+      description: "Keep tabs on drinks and spending for the whole group, in real-time."
+    },
+    {
+      icon: Gamepad2,
+      title: "Drinking Games",
+      description: "Break the ice with fun and interactive drinking games."
+    }
+  ];
 
   const steps = [
     {
@@ -102,9 +132,10 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
         </div>
       )
     },
-    {
-      key: "features",
+    ...features.map((feature, index) => ({
+      key: `feature-${index}`,
       content: (
+<<<<<<< Updated upstream
         <div className="flex flex-col items-center text-center space-y-8">
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
@@ -131,12 +162,54 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
             <Feature icon={Wine} title="Track the Vibe" description="Keep tabs on drinks and spending for the whole group, in real-time." />
             <Feature icon={Gamepad2} title="Drinking Games" description="Break the ice with fun and interactive drinking games." />
           </motion.div>
+=======
+        <div className="relative w-full h-96 flex items-center justify-center">
+          {features.map((bgFeature, bgIndex) => {
+            const isCurrent = index === bgIndex;
+            const offset = bgIndex - index;
+            
+            return (
+              <motion.div
+                key={`bg-${bgIndex}`}
+                className="absolute"
+                initial={{
+                  x: offset * 100,
+                  scale: isCurrent ? 1 : 0.8,
+                  opacity: isCurrent ? 1 : 0.3,
+                  zIndex: features.length - Math.abs(offset),
+                }}
+                animate={{
+                  x: offset * 100,
+                  scale: isCurrent ? 1 : 0.8,
+                  opacity: isCurrent ? 1 : 0.3,
+                  zIndex: features.length - Math.abs(offset),
+                }}
+                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              >
+                <LiquidGlassCard
+                  blurAmount={isCurrent ? 0.1 : 0}
+                  saturation={isCurrent ? 130 : 100}
+                  className={!isCurrent ? 'border-2 border-white/10' : ''}
+                >
+                  <div className="flex flex-col items-center text-center p-4">
+                    <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-full p-4 mb-4 shadow-lg">
+                      <bgFeature.icon className="w-10 h-10 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold text-white mb-1">{bgFeature.title}</h3>
+                    <p className="text-slate-300 max-w-xs">{bgFeature.description}</p>
+                  </div>
+                </LiquidGlassCard>
+              </motion.div>
+            );
+          })}
+>>>>>>> Stashed changes
         </div>
       )
-    },
+    })),
     {
       key: "start",
       content: (
+<<<<<<< Updated upstream
         <div className="flex flex-col items-center text-center space-y-6">
           <ParallaxIcon>
             <motion.div
@@ -184,6 +257,9 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
             </Button>
           </motion.div>
         </div>
+=======
+        <OnboardingSignupCard onSignUp={handleComplete} />
+>>>>>>> Stashed changes
       )
     }
   ];

@@ -1,12 +1,7 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Chrome, Smartphone, PartyPopper } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Input } from '@/components/ui/input';
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
+import React from 'react';
+import AuthCard from './AuthCard';
 
+<<<<<<< Updated upstream
 const AuthScreen = ({ onBack, onComplete, showBackButton }) => {
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState('select'); // 'select', 'phoneInput', 'otpInput'
@@ -181,8 +176,17 @@ const AuthScreen = ({ onBack, onComplete, showBackButton }) => {
   };
 
   const showInternalBackButton = step === 'phoneInput' || step === 'otpInput';
+=======
+interface AuthScreenProps {
+  onBack?: () => void;
+  onComplete: () => void;
+  showBackButton?: boolean;
+}
+>>>>>>> Stashed changes
 
+const AuthScreen: React.FC<AuthScreenProps> = ({ onBack, onComplete, showBackButton }) => {
   return (
+<<<<<<< Updated upstream
     <div className="min-h-screen aurora-bg flex items-center justify-center p-4 relative overflow-hidden">
       {/* Floating background orbs matching onboarding */}
       <div className="absolute inset-0 pointer-events-none">
@@ -254,6 +258,14 @@ const AuthScreen = ({ onBack, onComplete, showBackButton }) => {
           </AnimatePresence>
         </div>
       </motion.div>
+=======
+    <div className="min-h-screen aurora-bg flex items-center justify-center p-4">
+      <AuthCard 
+        onBack={onBack}
+        onComplete={onComplete}
+        showBackButton={showBackButton}
+      />
+>>>>>>> Stashed changes
     </div>
   );
 };
