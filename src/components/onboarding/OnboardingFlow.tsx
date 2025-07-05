@@ -18,11 +18,11 @@ const Feature = ({ icon: Icon, title, description }) => (
     whileHover={{ scale: 1.05 }}
     transition={{ type: 'spring', stiffness: 300 }}
   >
-    <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-full p-4 mb-4 shadow-lg">
-      <Icon className="w-10 h-10 text-white" />
+    <div className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 backdrop-blur-sm border border-purple-300/30 rounded-full p-4 mb-4 shadow-lg">
+      <Icon className="w-10 h-10 text-purple-200" />
     </div>
     <h3 className="text-xl font-bold text-white mb-1">{title}</h3>
-    <p className="text-slate-300 max-w-xs">{description}</p>
+    <p className="text-purple-100/80 max-w-xs">{description}</p>
   </motion.div>
 );
 
@@ -78,16 +78,17 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ type: 'spring', stiffness: 150, damping: 20, delay: 0.4 }}
-              className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-full p-6 shadow-lg"
+              className="bg-gradient-to-br from-purple-500/25 to-pink-500/25 backdrop-blur-sm border border-purple-300/40 rounded-full p-6 shadow-2xl relative overflow-hidden"
             >
-              <PartyPopper className="w-16 h-16 text-white" />
+              <PartyPopper className="w-16 h-16 text-purple-200 relative z-10" />
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-400/20 to-pink-400/20 animate-pulse"></div>
             </motion.div>
           </ParallaxIcon>
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2 }}
-            className="text-4xl md:text-5xl font-extrabold text-white"
+            className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-purple-200 via-pink-200 to-purple-300 bg-clip-text text-transparent"
           >
             Welcome to DRNKUP
           </motion.h1>
@@ -95,7 +96,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.7 }}
-            className="text-lg text-slate-300 max-w-md"
+            className="text-lg text-purple-100/90 max-w-md leading-relaxed"
           >
             Your ultimate companion for unforgettable nights out. Let's get you set up.
           </motion.p>
@@ -110,7 +111,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-4xl md:text-5xl font-extrabold text-white"
+            className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-purple-200 via-pink-200 to-purple-300 bg-clip-text text-transparent"
           >
             What's Inside?
           </motion.h1>
@@ -143,17 +144,17 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
               initial={{ scale: 0, y: 50 }}
               animate={{ scale: 1, y: 0 }}
               transition={{ type: 'spring', stiffness: 150, damping: 20, delay: 0.2 }}
-              className="mobile-glass-icon rounded-full p-6 shadow-lg relative overflow-hidden"
+              className="bg-gradient-to-br from-purple-500/30 to-pink-500/30 backdrop-blur-sm border border-purple-300/50 rounded-full p-6 shadow-2xl relative overflow-hidden"
             >
-              <Rocket className="w-16 h-16 text-purple-300 relative z-10" />
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/30 to-pink-500/30 animate-pulse"></div>
+              <Rocket className="w-16 h-16 text-purple-200 relative z-10" />
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-400/25 to-pink-400/25 animate-pulse"></div>
             </motion.div>
           </ParallaxIcon>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="text-4xl md:text-5xl font-extrabold text-white"
+            className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-purple-200 via-pink-200 to-purple-300 bg-clip-text text-transparent"
           >
             You're All Set!
           </motion.h1>
@@ -161,7 +162,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="text-lg text-slate-300 max-w-md"
+            className="text-lg text-purple-100/90 max-w-md leading-relaxed"
           >
             Ready to dive in and create your first epic night?
           </motion.p>
@@ -175,11 +176,12 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
           >
             <Button
               onClick={onComplete}
-              className="app-primary-button h-16 px-12 text-xl font-bold rounded-2xl flex items-center space-x-3 relative overflow-hidden group"
+              className="bg-gradient-to-r from-purple-600 via-pink-500 to-purple-700 hover:from-purple-500 hover:via-pink-400 hover:to-purple-600 text-white h-16 px-12 text-xl font-bold rounded-2xl flex items-center space-x-3 relative overflow-hidden group shadow-2xl border border-purple-300/30 backdrop-blur-sm transition-all duration-300"
             >
-              <Sparkles className="w-6 h-6 animate-pulse" />
-              <span>Get Started</span>
-              <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+              <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-white/20 to-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+              <Sparkles className="w-6 h-6 animate-pulse relative z-10" />
+              <span className="relative z-10">Get Started</span>
+              <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform relative z-10" />
             </Button>
           </motion.div>
         </div>
