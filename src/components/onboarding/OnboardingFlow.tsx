@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ArrowLeft, Users, Wine, Gamepad2, Rocket, PartyPopper, Sparkles } from 'lucide-react';
@@ -176,9 +175,9 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
           >
             <Button
               onClick={onComplete}
-              className="bg-gradient-to-r from-purple-600 via-pink-500 to-purple-700 hover:from-purple-500 hover:via-pink-400 hover:to-purple-600 text-white h-16 px-12 text-xl font-bold rounded-2xl flex items-center space-x-3 relative overflow-hidden group shadow-2xl border border-purple-300/30 backdrop-blur-sm transition-all duration-300"
+              className="liquid-glass-button h-16 px-12 text-xl font-bold rounded-2xl flex items-center space-x-3 relative overflow-hidden group shadow-2xl border border-white/20 backdrop-blur-xl transition-all duration-300"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-white/20 to-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-white/5 via-white/15 to-white/5 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
               <Sparkles className="w-6 h-6 animate-pulse relative z-10" />
               <span className="relative z-10">Get Started</span>
               <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform relative z-10" />
