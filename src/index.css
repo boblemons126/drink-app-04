@@ -59,20 +59,21 @@
 }
 
 @layer components {
-  /* True Liquid Glass Button with Background Refraction */
+  /* Premium Liquid Glass Get Started Button */
   .liquid-glass-button {
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(40px) saturate(180%);
-    -webkit-backdrop-filter: blur(40px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(60px) saturate(200%) brightness(110%);
+    -webkit-backdrop-filter: blur(60px) saturate(200%) brightness(110%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     color: white;
-    font-weight: 600;
+    font-weight: 700;
     box-shadow: 
-      0 32px 64px rgba(0, 0, 0, 0.25),
-      inset 0 1px 0 rgba(255, 255, 255, 0.4),
-      inset 0 -1px 0 rgba(255, 255, 255, 0.1),
-      0 0 0 1px rgba(255, 255, 255, 0.05);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      0 40px 80px rgba(0, 0, 0, 0.3),
+      inset 0 2px 0 rgba(255, 255, 255, 0.3),
+      inset 0 -2px 0 rgba(255, 255, 255, 0.1),
+      0 0 0 1px rgba(255, 255, 255, 0.05),
+      0 8px 32px rgba(139, 92, 246, 0.2);
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
     position: relative;
     overflow: hidden;
     touch-action: manipulation;
@@ -88,37 +89,39 @@
     height: 100%;
     background: linear-gradient(90deg, 
       transparent, 
-      rgba(255, 255, 255, 0.3), 
-      rgba(255, 255, 255, 0.1), 
+      rgba(255, 255, 255, 0.4), 
+      rgba(255, 255, 255, 0.2), 
       transparent
     );
-    transition: left 0.8s ease;
+    transition: left 1s ease;
   }
 
   .liquid-glass-button::after {
     content: '';
     position: absolute;
-    inset: 0;
+    inset: 1px;
     background: linear-gradient(135deg, 
       rgba(255, 255, 255, 0.1) 0%, 
-      rgba(255, 255, 255, 0.05) 50%, 
-      rgba(255, 255, 255, 0.15) 100%
+      rgba(255, 255, 255, 0.02) 50%, 
+      rgba(255, 255, 255, 0.08) 100%
     );
     border-radius: inherit;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.4s ease;
   }
 
   .liquid-glass-button:hover {
-    background: rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(50px) saturate(200%);
-    -webkit-backdrop-filter: blur(50px) saturate(200%);
-    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(80px) saturate(250%) brightness(120%);
+    -webkit-backdrop-filter: blur(80px) saturate(250%) brightness(120%);
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-3px) scale(1.02);
     box-shadow: 
-      0 40px 80px rgba(0, 0, 0, 0.3),
-      inset 0 1px 0 rgba(255, 255, 255, 0.5),
-      inset 0 -1px 0 rgba(255, 255, 255, 0.2),
-      0 0 0 1px rgba(255, 255, 255, 0.1);
+      0 50px 100px rgba(0, 0, 0, 0.4),
+      inset 0 2px 0 rgba(255, 255, 255, 0.4),
+      inset 0 -2px 0 rgba(255, 255, 255, 0.15),
+      0 0 0 1px rgba(255, 255, 255, 0.1),
+      0 12px 48px rgba(139, 92, 246, 0.3);
   }
 
   .liquid-glass-button:hover::before {
@@ -134,26 +137,27 @@
     transition: transform 0.1s ease;
   }
 
-  /* Apple-Inspired Authentication Buttons */
-  .apple-glass-button {
-    background: rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(30px) saturate(150%);
-    -webkit-backdrop-filter: blur(30px) saturate(150%);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+  /* Professional Primary Auth Button */
+  .premium-glass-primary {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(40px) saturate(180%) brightness(105%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%) brightness(105%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
     font-weight: 600;
     box-shadow: 
-      0 20px 40px rgba(0, 0, 0, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.3),
-      inset 0 -1px 0 rgba(255, 255, 255, 0.1);
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      0 24px 48px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.25),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.08),
+      0 0 0 1px rgba(255, 255, 255, 0.03);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     position: relative;
     overflow: hidden;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
   }
 
-  .apple-glass-button::before {
+  .premium-glass-primary::before {
     content: '';
     position: absolute;
     top: 0;
@@ -163,49 +167,55 @@
     background: linear-gradient(90deg, 
       transparent, 
       rgba(255, 255, 255, 0.15), 
+      rgba(255, 255, 255, 0.08),
       transparent
     );
-    transition: left 0.6s ease;
+    transition: left 0.8s ease;
   }
 
-  .apple-glass-button:hover {
-    background: rgba(255, 255, 255, 0.18);
-    border-color: rgba(255, 255, 255, 0.25);
-    transform: translateY(-1px);
+  .premium-glass-primary:hover {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(50px) saturate(200%) brightness(110%);
+    -webkit-backdrop-filter: blur(50px) saturate(200%) brightness(110%);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
     box-shadow: 
-      0 24px 48px rgba(0, 0, 0, 0.2),
-      inset 0 1px 0 rgba(255, 255, 255, 0.4),
-      inset 0 -1px 0 rgba(255, 255, 255, 0.15);
+      0 32px 64px rgba(0, 0, 0, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.35),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.12),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
   }
 
-  .apple-glass-button:hover::before {
+  .premium-glass-primary:hover::before {
     left: 100%;
   }
 
-  .apple-glass-button:active {
+  .premium-glass-primary:active {
     transform: scale(0.98);
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.1);
   }
 
-  .apple-glass-button-secondary {
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(25px) saturate(120%);
-    -webkit-backdrop-filter: blur(25px) saturate(120%);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: rgba(255, 255, 255, 0.9);
+  /* Elegant Secondary Auth Button */
+  .premium-glass-secondary {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(30px) saturate(150%) brightness(102%);
+    -webkit-backdrop-filter: blur(30px) saturate(150%) brightness(102%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.95);
     font-weight: 600;
     box-shadow: 
-      0 16px 32px rgba(0, 0, 0, 0.12),
-      inset 0 1px 0 rgba(255, 255, 255, 0.25),
-      inset 0 -1px 0 rgba(255, 255, 255, 0.08);
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      0 20px 40px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+      0 0 0 1px rgba(255, 255, 255, 0.02);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     position: relative;
     overflow: hidden;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
   }
 
-  .apple-glass-button-secondary::before {
+  .premium-glass-secondary::before {
     content: '';
     position: absolute;
     top: 0;
@@ -215,29 +225,33 @@
     background: linear-gradient(90deg, 
       transparent, 
       rgba(255, 255, 255, 0.1), 
+      rgba(255, 255, 255, 0.05),
       transparent
     );
-    transition: left 0.6s ease;
+    transition: left 0.8s ease;
   }
 
-  .apple-glass-button-secondary:hover {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.2);
+  .premium-glass-secondary:hover {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(40px) saturate(170%) brightness(105%);
+    -webkit-backdrop-filter: blur(40px) saturate(170%) brightness(105%);
+    border-color: rgba(255, 255, 255, 0.18);
     color: white;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
     box-shadow: 
-      0 20px 40px rgba(0, 0, 0, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.3),
-      inset 0 -1px 0 rgba(255, 255, 255, 0.12);
+      0 28px 56px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.25),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.08),
+      0 0 0 1px rgba(255, 255, 255, 0.04);
   }
 
-  .apple-glass-button-secondary:hover::before {
+  .premium-glass-secondary:hover::before {
     left: 100%;
   }
 
-  .apple-glass-button-secondary:active {
+  .premium-glass-secondary:active {
     transform: scale(0.98);
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.06);
   }
 
   /* App-Themed Button Styles */
@@ -363,8 +377,8 @@
   .app-secondary-button:disabled,
   .app-accent-button:disabled,
   .app-success-button:disabled,
-  .apple-glass-button:disabled,
-  .apple-glass-button-secondary:disabled,
+  .premium-glass-primary:disabled,
+  .premium-glass-secondary:disabled,
   .liquid-glass-button:disabled {
     opacity: 0.6;
     transform: none;
@@ -670,8 +684,8 @@
   .app-secondary-button,
   .app-accent-button,
   .app-success-button,
-  .apple-glass-button,
-  .apple-glass-button-secondary,
+  .premium-glass-primary,
+  .premium-glass-secondary,
   .liquid-glass-button {
     min-height: 4rem;
     font-size: 1rem;
@@ -689,8 +703,8 @@
   .app-secondary-button:active,
   .app-accent-button:active,
   .app-success-button:active,
-  .apple-glass-button:active,
-  .apple-glass-button-secondary:active,
+  .premium-glass-primary:active,
+  .premium-glass-secondary:active,
   .liquid-glass-button:active {
     transform: scale(0.98);
   }
@@ -699,8 +713,8 @@
   @media (prefers-reduced-motion: reduce) {
     .mobile-glass-card::before,
     .app-primary-button::before,
-    .apple-glass-button::before,
-    .apple-glass-button-secondary::before,
+    .premium-glass-primary::before,
+    .premium-glass-secondary::before,
     .liquid-glass-button::before {
       display: none;
     }
@@ -709,8 +723,8 @@
     .app-secondary-button:hover,
     .app-accent-button:hover,
     .app-success-button:hover,
-    .apple-glass-button:hover,
-    .apple-glass-button-secondary:hover,
+    .premium-glass-primary:hover,
+    .premium-glass-secondary:hover,
     .liquid-glass-button:hover {
       transform: none;
     }
@@ -724,8 +738,8 @@
   .app-secondary-button,
   .app-accent-button,
   .app-success-button,
-  .apple-glass-button,
-  .apple-glass-button-secondary,
+  .premium-glass-primary,
+  .premium-glass-secondary,
   .liquid-glass-button,
   .mobile-glass-input {
     border-width: 2px;

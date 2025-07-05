@@ -79,7 +79,7 @@ const AuthScreen = ({ onBack, onComplete, showBackButton }) => {
         <Button 
           onClick={() => handleOAuthSignIn('google')} 
           disabled={loading} 
-          className="w-full apple-glass-button h-16 rounded-2xl font-semibold text-lg flex items-center justify-center space-x-3"
+          className="w-full premium-glass-primary h-16 rounded-2xl font-semibold text-lg flex items-center justify-center space-x-3"
         >
           <Chrome className="w-6 h-6" /> 
           <span>Continue with Google</span>
@@ -104,7 +104,7 @@ const AuthScreen = ({ onBack, onComplete, showBackButton }) => {
         <Button 
           onClick={() => setStep('phoneInput')} 
           disabled={loading} 
-          className="w-full apple-glass-button-secondary h-16 rounded-2xl font-semibold text-lg flex items-center justify-center space-x-3"
+          className="w-full premium-glass-secondary h-16 rounded-2xl font-semibold text-lg flex items-center justify-center space-x-3"
         >
           <Smartphone className="w-6 h-6" /> 
           <span>Continue with Phone</span>
