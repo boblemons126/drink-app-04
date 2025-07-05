@@ -26,6 +26,7 @@ This document tracks all significant changes, additions, and fixes to the DRNKUP
 - Enhanced photo and video sharing
 - Night recap summaries
 
+<<<<<<< Updated upstream
 ### Fixed
 - Resolved critical merge conflicts in `OnboardingFlow.tsx` and `AuthScreen.tsx` that were preventing the application from starting.
 - Corrected component logic and prop mismatches that arose from the merge.
@@ -34,6 +35,8 @@ This document tracks all significant changes, additions, and fixes to the DRNKUP
 - Merged different UI/UX approaches in `OnboardingFlow.tsx` to create a single, more feature-rich and polished user experience, combining parallax effects, animated cards, and a clearer step progression.
 - Consolidated authentication logic in `AuthScreen.tsx` to fully support OAuth, phone number, and OTP verification flows in a type-safe manner.
 
+=======
+>>>>>>> Stashed changes
 ## [0.1.0] - 2023-12-15
 
 ### Added

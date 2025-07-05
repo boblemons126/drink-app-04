@@ -1,26 +1,20 @@
 import React, { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { ArrowLeft, Chrome, Smartphone, PartyPopper } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Chrome, Smartphone, ArrowLeft, PartyPopper } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
 
-interface AuthScreenProps {
-  onBack?: () => void;
-  onComplete: () => void;
-  showBackButton?: boolean;
-}
-
-const AuthScreen: React.FC<AuthScreenProps> = ({ onBack, onComplete, showBackButton }) => {
+const AuthScreen = ({ onBack, onComplete, showBackButton }) => {
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState('select'); // 'select', 'phoneInput', 'otpInput'
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
   const { toast } = useToast();
 
-  const handleOAuthSignIn = async (provider: 'google') => {
+  const handleOAuthSignIn = async (provider) => {
     setLoading(true);
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
@@ -85,7 +79,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onBack, onComplete, showBackBut
         <Button 
           onClick={() => handleOAuthSignIn('google')} 
           disabled={loading} 
-          className="w-full premium-glass-primary h-16 rounded-2xl font-semibold text-lg flex items-center justify-center space-x-3"
+          className="w-full apple-glass-button h-16 rounded-2xl font-semibold text-lg flex items-center justify-center space-x-3"
         >
           <Chrome className="w-6 h-6" /> 
           <span>Continue with Google</span>
@@ -110,7 +104,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onBack, onComplete, showBackBut
         <Button 
           onClick={() => setStep('phoneInput')} 
           disabled={loading} 
-          className="w-full premium-glass-secondary h-16 rounded-2xl font-semibold text-lg flex items-center justify-center space-x-3"
+          className="w-full apple-glass-button-secondary h-16 rounded-2xl font-semibold text-lg flex items-center justify-center space-x-3"
         >
           <Smartphone className="w-6 h-6" /> 
           <span>Continue with Phone</span>
@@ -181,19 +175,16 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onBack, onComplete, showBackBut
   );
 
   const handleBack = () => {
-    if (onBack && step === 'select') {
-        onBack();
-    } else if (step === 'otpInput') {
-        setStep('phoneInput');
-    } else {
-        setStep('select');
-    }
+    if (step === 'otpInput') setStep('phoneInput');
+    else if (step === 'phoneInput') setStep('select');
+    else onBack();
   };
 
   const showInternalBackButton = step === 'phoneInput' || step === 'otpInput';
-  
+
   return (
     <div className="min-h-screen aurora-bg flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Floating background orbs matching onboarding */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-purple-400/30 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
