@@ -1,6 +1,7 @@
+
 import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ArrowLeft, Users, Wine, Gamepad2, Rocket, PartyPopper } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Users, Wine, Gamepad2, Rocket, PartyPopper, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 
 interface OnboardingFlowProps {
@@ -141,15 +142,16 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
     {
       key: "start",
       content: (
-        <div className="flex flex-col items-center text-center space-y-4">
+        <div className="flex flex-col items-center text-center space-y-6">
           <ParallaxIcon>
             <motion.div
               initial={{ scale: 0, y: 50 }}
               animate={{ scale: 1, y: 0 }}
               transition={{ type: 'spring', stiffness: 150, damping: 20, delay: 0.2 }}
-              className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-full p-6 shadow-lg"
+              className="mobile-glass-icon rounded-full p-6 shadow-lg relative overflow-hidden"
             >
-              <Rocket className="w-16 h-16 text-white" />
+              <Rocket className="w-16 h-16 text-purple-300 relative z-10" />
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/30 to-pink-500/30 animate-pulse"></div>
             </motion.div>
           </ParallaxIcon>
           <motion.h1
@@ -166,18 +168,23 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
             transition={{ delay: 0.5 }}
             className="text-lg text-slate-300 max-w-md"
           >
-            Ready to dive in and plan your first epic night?
+            Ready to dive in and create your first epic night?
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="mt-6"
           >
             <Button
               onClick={handleComplete}
-              className="mt-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 shadow-lg px-8 py-3 text-lg"
+              className="app-primary-button h-16 px-12 text-xl font-bold rounded-2xl flex items-center space-x-3 relative overflow-hidden group"
             >
-              Sign Up Now
+              <Sparkles className="w-6 h-6 animate-pulse" />
+              <span>Get Started</span>
+              <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
             </Button>
           </motion.div>
         </div>
