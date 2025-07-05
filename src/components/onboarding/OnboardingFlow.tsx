@@ -67,11 +67,6 @@ const ParallaxIcon = ({ children }) => {
 const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState(0);
-  const [isExiting, setIsExiting] = useState(false);
-
-  const handleComplete = () => {
-    setIsExiting(true);
-  };
 
   const steps = [
     {
@@ -179,7 +174,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
             className="mt-6"
           >
             <Button
-              onClick={handleComplete}
+              onClick={onComplete}
               className="app-primary-button h-16 px-12 text-xl font-bold rounded-2xl flex items-center space-x-3 relative overflow-hidden group"
             >
               <Sparkles className="w-6 h-6 animate-pulse" />
@@ -224,17 +219,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
   };
 
   return (
-    <motion.div
-      className="min-h-screen aurora-bg flex flex-col items-center justify-center p-4 overflow-hidden"
-      initial={{ opacity: 1 }}
-      animate={{ opacity: isExiting ? 0 : 1 }}
-      transition={{ duration: 0.5 }}
-      onAnimationComplete={() => {
-        if (isExiting) {
-          onComplete();
-        }
-      }}
-    >
+    <div className="min-h-screen aurora-bg flex flex-col items-center justify-center p-4 overflow-hidden">
       <div className="flex-grow flex items-center justify-center w-full relative">
         <AnimatePresence custom={direction}>
           <motion.div
@@ -280,7 +265,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
